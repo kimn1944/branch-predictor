@@ -1,0 +1,5 @@
+# exclude everything except the ./verilog directory, readme and gitignore files
+/*
+!/verilog
+!/README.md
+!/.gitignore
