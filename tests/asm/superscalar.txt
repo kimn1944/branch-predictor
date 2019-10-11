@@ -1,0 +1,69 @@
+
+superscalar:     file format elf32-tradbigmips
+
+
+Disassembly of section .text:
+
+004000d0 <__start>:
+.text
+.global __start
+.global main
+__start:
+main:
+addi $1, $0, 1	/*cycle 1*/
+  4000d0:	20010001 	addi	$1,$0,1
+addi $2, $0, 2	/*cycle 1*/
+  4000d4:	20020002 	addi	$2,$0,2
+addi $3, $0, 3	/*cycle 2*/
+  4000d8:	20030003 	addi	$3,$0,3
+add $4, $3, $1	/*cycle 3 (gets postponed)*/
+  4000dc:	00612020 	add	$4,$3,$1
+	...
+nop				/*cycle 3*/
+nop				/*cycle 4*/
+nop				/*cycle 4*/
+add $6, $3, $3	/*cycle 5*/
+  4000ec:	00633020 	add	$6,$3,$3
+add $5, $2, $3	/*cycle 5*/
+  4000f0:	00432820 	add	$5,$2,$3
+add $7, $2, $5	/*cycle 6 (no postponement)*/
+  4000f4:	00453820 	add	$7,$2,$5
+lui $28, 0x100	/*cycle 6*/
+  4000f8:	3c1c0100 	lui	$28,0x100
+add $8, $5, $3	/*cycle 7*/
+  4000fc:	00a34020 	add	$8,$5,$3
+lw $11, 0($28)	/*cycle 7 (no postponement)*/
+  400100:	8f8b0000 	lw	$11,0($28)
+lw $12, 12($28)	/*cycle 9*/
+  400104:	8f8c000c 	lw	$12,12($28)
+nop				/*cycle 9*/
+  400108:	00000000 	nop
+add $11, $12, $0/*cycle 11 (needs to wait for delay slot)*/
+  40010c:	01805820 	add	$11,$12,$0
+lw $13, 20($28)	/*cycle 11*/
+  400110:	8f8d0014 	lw	$13,20($28)
+lw $12, 16($28) /*cycle 12*/
+  400114:	8f8c0010 	lw	$12,16($28)
+	...
+
+
+Disassembly of section .data:
+
+01000000 <_fdata>:
+ 1000000:	deadbeef 	0xdeadbeef
+
+01000004 <data2>:
+ 1000004:	cafebabe 	lwc2	$30,-17730(s7)
+
+01000008 <data3>:
+ 1000008:	f00dfeed 	0xf00dfeed
+
+0100000c <number11>:
+ 100000c:	0000000b 	0xb
+
+01000010 <number12>:
+ 1000010:	0000000c 	syscall
+
+01000014 <number13>:
+ 1000014:	0000000d 	break
+	...

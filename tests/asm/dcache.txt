@@ -1,0 +1,102 @@
+
+dcache:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	0000ff0e 	0xff0e
+	...
+  4000a8:	00418220 	0x418220
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	3c080001 	lui	t0,0x1
+  4000b4:	35080203 	ori	t0,t0,0x203
+  4000b8:	3c090405 	lui	t1,0x405
+  4000bc:	35290607 	ori	t1,t1,0x607
+  4000c0:	3c0a0809 	lui	t2,0x809
+  4000c4:	354a0a0b 	ori	t2,t2,0xa0b
+  4000c8:	3c0b0c0d 	lui	t3,0xc0d
+  4000cc:	356b0e0f 	ori	t3,t3,0xe0f
+  4000d0:	3c0c1011 	lui	t4,0x1011
+  4000d4:	358c1213 	ori	t4,t4,0x1213
+  4000d8:	3c0d1415 	lui	t5,0x1415
+  4000dc:	35ad1617 	ori	t5,t5,0x1617
+  4000e0:	3c0e1819 	lui	t6,0x1819
+  4000e4:	35ce1a1b 	ori	t6,t6,0x1a1b
+  4000e8:	3c0f1c1d 	lui	t7,0x1c1d
+  4000ec:	35ef1e1f 	ori	t7,t7,0x1e1f
+  4000f0:	00001021 	move	v0,zero
+  4000f4:	ac480000 	sw	t0,0(v0)
+  4000f8:	ac4a0008 	sw	t2,8(v0)
+  4000fc:	ac4f001c 	sw	t7,28(v0)
+	...
+  40010c:	24020020 	li	v0,32
+  400110:	ac480000 	sw	t0,0(v0)
+  400114:	ac490004 	sw	t1,4(v0)
+  400118:	ac4a0008 	sw	t2,8(v0)
+  40011c:	ac4b000c 	sw	t3,12(v0)
+  400120:	ac4c0010 	sw	t4,16(v0)
+  400124:	ac4d0014 	sw	t5,20(v0)
+  400128:	ac4e0018 	sw	t6,24(v0)
+  40012c:	ac4f001c 	sw	t7,28(v0)
+	...
+  40013c:	3c014000 	lui	at,0x4000
+  400140:	01014021 	addu	t0,t0,at
+  400144:	3c014000 	lui	at,0x4000
+  400148:	01214821 	addu	t1,t1,at
+  40014c:	3c014000 	lui	at,0x4000
+  400150:	01415021 	addu	t2,t2,at
+  400154:	3c014000 	lui	at,0x4000
+  400158:	01615821 	addu	t3,t3,at
+  40015c:	3c014000 	lui	at,0x4000
+  400160:	01816021 	addu	t4,t4,at
+  400164:	3c014000 	lui	at,0x4000
+  400168:	01a16821 	addu	t5,t5,at
+  40016c:	3c014000 	lui	at,0x4000
+  400170:	01c17021 	addu	t6,t6,at
+  400174:	3c014000 	lui	at,0x4000
+  400178:	01e17821 	addu	t7,t7,at
+  40017c:	24024000 	li	v0,16384
+  400180:	ac480000 	sw	t0,0(v0)
+  400184:	ac490004 	sw	t1,4(v0)
+  400188:	ac4a0008 	sw	t2,8(v0)
+  40018c:	ac4b000c 	sw	t3,12(v0)
+  400190:	ac4c0010 	sw	t4,16(v0)
+  400194:	ac4d0014 	sw	t5,20(v0)
+  400198:	ac4e0018 	sw	t6,24(v0)
+  40019c:	ac4f001c 	sw	t7,28(v0)
+	...
+  4001ac:	3c011000 	lui	at,0x1000
+  4001b0:	01014021 	addu	t0,t0,at
+  4001b4:	3c011000 	lui	at,0x1000
+  4001b8:	01214821 	addu	t1,t1,at
+  4001bc:	3c011000 	lui	at,0x1000
+  4001c0:	01415021 	addu	t2,t2,at
+  4001c4:	3c011000 	lui	at,0x1000
+  4001c8:	01615821 	addu	t3,t3,at
+  4001cc:	3c011000 	lui	at,0x1000
+  4001d0:	01816021 	addu	t4,t4,at
+  4001d4:	3c011000 	lui	at,0x1000
+  4001d8:	01a16821 	addu	t5,t5,at
+  4001dc:	3c011000 	lui	at,0x1000
+  4001e0:	01c17021 	addu	t6,t6,at
+  4001e4:	3c011000 	lui	at,0x1000
+  4001e8:	01e17821 	addu	t7,t7,at
+  4001ec:	24424000 	addiu	v0,v0,16384
+  4001f0:	ac480000 	sw	t0,0(v0)
+  4001f4:	ac490004 	sw	t1,4(v0)
+  4001f8:	ac4a0008 	sw	t2,8(v0)
+  4001fc:	ac4b000c 	sw	t3,12(v0)
+  400200:	ac4c0010 	sw	t4,16(v0)
+  400204:	ac4d0014 	sw	t5,20(v0)
+  400208:	ac4e0018 	sw	t6,24(v0)
+  40020c:	ac4f001c 	sw	t7,28(v0)
+	...
+  40021c:	00401821 	move	v1,v0
+  400220:	24020fa1 	li	v0,4001
+  400224:	ac680020 	sw	t0,32(v1)
+  400228:	0000000c 	syscall
+  40022c:	00000000 	nop

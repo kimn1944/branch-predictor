@@ -1,0 +1,34 @@
+
+systest.jumpeasy:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	80000004 	lb	zero,4(zero)
+	...
+  4000a8:	00418110 	0x418110
+
+Disassembly of section .text:
+
+004000c0 <_ftext>:
+	...
+
+004000d8 <__start>:
+  4000d8:	04110001 	bal	4000e0 <next>
+  4000dc:	00000000 	nop
+
+004000e0 <next>:
+  4000e0:	23ff0020 	addi	ra,ra,32
+  4000e4:	20020fb4 	addi	v0,zero,4020
+  4000e8:	0000000c 	syscall
+  4000ec:	03e00008 	jr	ra
+  4000f0:	00000000 	nop
+  4000f4:	20020000 	addi	v0,zero,0
+  4000f8:	0000000c 	syscall
+  4000fc:	00000000 	nop
+
+00400100 <place1>:
+  400100:	20020fa1 	addi	v0,zero,4001
+  400104:	0000000c 	syscall
+	...

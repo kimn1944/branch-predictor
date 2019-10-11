@@ -1,0 +1,33 @@
+
+atomics:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	8000003c 	lb	zero,60(zero)
+	...
+  4000a8:	004180e0 	0x4180e0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	24020fa1 	li	v0,4001
+  4000b4:	0000000c 	syscall
+
+004000b8 <_ZN9__gnu_cxx18__exchange_and_addEPVii>:
+  4000b8:	8c820000 	lw	v0,0(a0)
+  4000bc:	00000000 	nop
+  4000c0:	00a21821 	addu	v1,a1,v0
+  4000c4:	ac830000 	sw	v1,0(a0)
+  4000c8:	03e00008 	jr	ra
+  4000cc:	24030001 	li	v1,1
+
+004000d0 <_ZN9__gnu_cxx12__atomic_addEPVii>:
+  4000d0:	8c820000 	lw	v0,0(a0)
+  4000d4:	00000000 	nop
+  4000d8:	00a21021 	addu	v0,a1,v0
+  4000dc:	ac820000 	sw	v0,0(a0)
+  4000e0:	03e00008 	jr	ra
+  4000e4:	24020001 	li	v0,1
+	...

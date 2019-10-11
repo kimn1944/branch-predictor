@@ -1,0 +1,45 @@
+
+instr_stall_test:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000034 	0x34
+	...
+  4000a8:	00418150 	0x418150
+
+Disassembly of section .text:
+
+004000c0 <__start>:
+  4000c0:	2400dead 	li	zero,-8531
+	...
+  4000e0:	10000007 	b	400100 <CONTINUE1>
+  4000e4:	00000000 	nop
+
+004000e8 <FAILED_jump_miss>:
+  4000e8:	24020fb4 	li	v0,4020
+  4000ec:	0000000c 	syscall
+  4000f0:	00402021 	move	a0,v0
+  4000f4:	24050009 	li	a1,9
+  4000f8:	24020fc5 	li	v0,4037
+  4000fc:	0000000c 	syscall
+
+00400100 <CONTINUE1>:
+  400100:	2400dead 	li	zero,-8531
+	...
+  40011c:	10000007 	b	40013c <CONTINUE2>
+  400120:	00000000 	nop
+
+00400124 <FAILED_delay_slot_miss>:
+  400124:	24020fb4 	li	v0,4020
+  400128:	0000000c 	syscall
+  40012c:	00402021 	move	a0,v0
+  400130:	24050009 	li	a1,9
+  400134:	24020fc5 	li	v0,4037
+  400138:	0000000c 	syscall
+
+0040013c <CONTINUE2>:
+  40013c:	24020fa1 	li	v0,4001
+  400140:	0000000c 	syscall
+	...

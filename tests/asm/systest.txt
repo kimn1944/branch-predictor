@@ -1,0 +1,44 @@
+
+systest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000004 	sllv	zero,zero,zero
+	...
+  4000a8:	00418110 	0x418110
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20020fb4 	addi	v0,zero,4020
+  4000b4:	0000000c 	syscall
+  4000b8:	20021024 	addi	v0,zero,4132
+  4000bc:	0000000c 	syscall
+  4000c0:	20020fb8 	addi	v0,zero,4024
+  4000c4:	0000000c 	syscall
+  4000c8:	20020fcf 	addi	v0,zero,4047
+  4000cc:	0000000c 	syscall
+  4000d0:	20020fd1 	addi	v0,zero,4049
+  4000d4:	0000000c 	syscall
+  4000d8:	20020fd2 	addi	v0,zero,4050
+  4000dc:	0000000c 	syscall
+  4000e0:	20020fe0 	addi	v0,zero,4064
+  4000e4:	0000000c 	syscall
+  4000e8:	20020fe1 	addi	v0,zero,4065
+  4000ec:	0000000c 	syscall
+  4000f0:	20020fec 	addi	v0,zero,4076
+  4000f4:	0000000c 	syscall
+  4000f8:	20020fed 	addi	v0,zero,4077
+  4000fc:	0000000c 	syscall
+  400100:	20020fee 	addi	v0,zero,4078
+  400104:	0000000c 	syscall
+  400108:	2002101a 	addi	v0,zero,4122
+  40010c:	0000000c 	syscall
+  400110:	20020fa1 	addi	v0,zero,4001
+  400114:	0000000c 	syscall
+
+00400118 <fail>:
+  400118:	1000ffff 	b	400118 <fail>
+  40011c:	00000000 	nop

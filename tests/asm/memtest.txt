@@ -1,0 +1,91 @@
+
+memtest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	001071ba 	0x1071ba
+	...
+  4000a8:	004181b0 	0x4181b0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20010000 	addi	at,zero,0
+  4000b4:	8c230004 	lw	v1,4(at)
+  4000b8:	84240004 	lh	a0,4(at)
+  4000bc:	80250004 	lb	a1,4(at)
+  4000c0:	94270004 	lhu	a3,4(at)
+  4000c4:	90280004 	lbu	t0,4(at)
+	...
+  4000d0:	3c0cdead 	lui	t4,0xdead
+  4000d4:	358cbeef 	ori	t4,t4,0xbeef
+  4000d8:	ac0c0010 	sw	t4,16(zero)
+  4000dc:	a00c0014 	sb	t4,20(zero)
+  4000e0:	a00c0019 	sb	t4,25(zero)
+  4000e4:	a00c001e 	sb	t4,30(zero)
+  4000e8:	a00c0023 	sb	t4,35(zero)
+  4000ec:	a40c0024 	sh	t4,36(zero)
+  4000f0:	a40c0029 	sh	t4,41(zero)
+  4000f4:	a40c002e 	sh	t4,46(zero)
+  4000f8:	a40c0033 	sh	t4,51(zero)
+  4000fc:	a80c0034 	swl	t4,52(zero)
+  400100:	a80c0039 	swl	t4,57(zero)
+  400104:	a80c003e 	swl	t4,62(zero)
+  400108:	a80c0043 	swl	t4,67(zero)
+  40010c:	b80c0044 	swr	t4,68(zero)
+  400110:	b80c0049 	swr	t4,73(zero)
+  400114:	b80c004e 	swr	t4,78(zero)
+  400118:	b80c0053 	swr	t4,83(zero)
+	...
+  400124:	8c0d0010 	lw	t5,16(zero)
+  400128:	00000000 	nop
+  40012c:	158d0014 	bne	t4,t5,400180 <fail_sw>
+  400130:	00000000 	nop
+  400134:	3c0def00 	lui	t6,0xef00
+  400138:	8c0d0014 	lw	t5,20(zero)
+  40013c:	00000000 	nop
+  400140:	15cd0011 	bne	t6,t5,400188 <fail_sb0>
+  400144:	00000000 	nop
+  400148:	8c0d0018 	lw	t5,24(zero)
+  40014c:	000e7202 	srl	t6,t6,0x8
+  400150:	15cd000f 	bne	t6,t5,400190 <fail_sb1>
+  400154:	00000000 	nop
+  400158:	8c0d001c 	lw	t5,28(zero)
+  40015c:	000e7202 	srl	t6,t6,0x8
+  400160:	15cd000d 	bne	t6,t5,400198 <fail_sb2>
+  400164:	00000000 	nop
+  400168:	8c0d0020 	lw	t5,32(zero)
+  40016c:	000e7202 	srl	t6,t6,0x8
+  400170:	15cd000b 	bne	t6,t5,4001a0 <fail_sb3>
+  400174:	00000000 	nop
+  400178:	1000000b 	b	4001a8 <all_done>
+  40017c:	00000000 	nop
+
+00400180 <fail_sw>:
+  400180:	1000ffff 	b	400180 <fail_sw>
+  400184:	00000000 	nop
+
+00400188 <fail_sb0>:
+  400188:	1000ffff 	b	400188 <fail_sb0>
+  40018c:	00000000 	nop
+
+00400190 <fail_sb1>:
+  400190:	1000ffff 	b	400190 <fail_sb1>
+  400194:	00000000 	nop
+
+00400198 <fail_sb2>:
+  400198:	1000ffff 	b	400198 <fail_sb2>
+  40019c:	00000000 	nop
+
+004001a0 <fail_sb3>:
+  4001a0:	1000ffff 	b	4001a0 <fail_sb3>
+  4001a4:	00000000 	nop
+
+004001a8 <all_done>:
+  4001a8:	10000000 	b	4001ac <all_done+0x4>
+  4001ac:	00000000 	nop
+  4001b0:	1000fffd 	b	4001a8 <all_done>
+  4001b4:	00000000 	nop
+	...

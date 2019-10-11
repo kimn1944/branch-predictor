@@ -1,0 +1,51 @@
+
+branchtest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+004000b4 <.reginfo>:
+  4000b4:	90000356 	lbu	zero,854(zero)
+	...
+  4000c8:	00418120 	0x418120
+
+Disassembly of section .text:
+
+004000d0 <__start>:
+  4000d0:	8f9f8018 	lw	ra,-32744(gp)
+  4000d4:	00000000 	nop
+  4000d8:	27ff00f0 	addiu	ra,ra,240
+  4000dc:	00000000 	nop
+  4000e0:	03e00008 	jr	ra
+  4000e4:	00000000 	nop
+
+004000e8 <failed1>:
+  4000e8:	1000ffff 	b	4000e8 <failed1>
+  4000ec:	00000000 	nop
+
+004000f0 <cont1>:
+  4000f0:	3c1fffff 	lui	ra,0xffff
+  4000f4:	20010001 	addi	at,zero,1
+  4000f8:	00211020 	add	v0,at,at
+  4000fc:	00422020 	add	a0,v0,v0
+  400100:	00443020 	add	a2,v0,a0
+  400104:	00c24020 	add	t0,a2,v0
+  400108:	01014820 	add	t1,t0,at
+  40010c:	11290003 	beq	t1,t1,40011c <done>
+  400110:	00000000 	nop
+
+00400114 <failed>:
+  400114:	1000ffff 	b	400114 <failed>
+  400118:	00000000 	nop
+
+0040011c <done>:
+  40011c:	1000ffff 	b	40011c <done>
+  400120:	00000000 	nop
+	...
+
+Disassembly of section .got:
+
+00410130 <_GLOBAL_OFFSET_TABLE_>:
+  410130:	00000000 	nop
+  410134:	80000000 	lb	zero,0(zero)
+  410138:	00400000 	0x400000

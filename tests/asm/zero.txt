@@ -1,0 +1,32 @@
+
+zero:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000006 	srlv	zero,zero,zero
+	...
+  4000a8:	004181a0 	0x4181a0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	3400dead 	li	zero,0xdead
+	...
+  4000f4:	3c015678 	lui	at,0x5678
+  4000f8:	3421abcd 	ori	at,at,0xabcd
+  4000fc:	3c021234 	lui	v0,0x1234
+  400100:	3442fedc 	ori	v0,v0,0xfedc
+  400104:	00220020 	add	zero,at,v0
+	...
+  400148:	3c01cafe 	lui	at,0xcafe
+  40014c:	3421babe 	ori	at,at,0xbabe
+  400150:	00200013 	mtlo	at
+  400154:	00000012 	mflo	zero
+	...
+  400198:	3c01dead 	lui	at,0xdead
+  40019c:	3421beef 	ori	at,at,0xbeef
+  4001a0:	00200011 	mthi	at
+  4001a4:	00000010 	mfhi	zero
+	...

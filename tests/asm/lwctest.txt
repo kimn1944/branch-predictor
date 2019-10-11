@@ -1,0 +1,52 @@
+
+lwctest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	0200003e 	0x200003e
+	...
+  4000a8:	00418120 	0x418120
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	3c19deca 	lui	t9,0xdeca
+  4000b4:	3721de01 	ori	at,t9,0xde01
+  4000b8:	3c19cafe 	lui	t9,0xcafe
+  4000bc:	3722babe 	ori	v0,t9,0xbabe
+  4000c0:	e0010000 	swc0	$1,0(zero)
+  4000c4:	8c050000 	lw	a1,0(zero)
+  4000c8:	e0020004 	swc0	$2,4(zero)
+  4000cc:	c0030000 	lwc0	$3,0(zero)
+  4000d0:	c0040004 	lwc0	$4,4(zero)
+  4000d4:	1444000b 	bne	v0,a0,400104 <fail_c1>
+  4000d8:	00000000 	nop
+  4000dc:	00000000 	nop
+  4000e0:	1423000a 	bne	at,v1,40010c <fail_c2>
+  4000e4:	00000000 	nop
+  4000e8:	00000000 	nop
+  4000ec:	14250009 	bne	at,a1,400114 <fail_c3>
+  4000f0:	00000000 	nop
+  4000f4:	00000000 	nop
+  4000f8:	10000008 	b	40011c <all_done>
+  4000fc:	00000000 	nop
+  400100:	00000000 	nop
+
+00400104 <fail_c1>:
+  400104:	1000ffff 	b	400104 <fail_c1>
+  400108:	00000000 	nop
+
+0040010c <fail_c2>:
+  40010c:	1000ffff 	b	40010c <fail_c2>
+  400110:	00000000 	nop
+
+00400114 <fail_c3>:
+  400114:	1000ffff 	b	400114 <fail_c3>
+  400118:	00000000 	nop
+
+0040011c <all_done>:
+  40011c:	1000ffff 	b	40011c <all_done>
+  400120:	00000000 	nop
+	...

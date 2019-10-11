@@ -1,0 +1,73 @@
+
+sys_ll_sc:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000e76 	0xe76
+	...
+  4000a8:	00418180 	0x418180
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	24040010 	li	a0,16
+  4000b4:	240211cb 	li	v0,4555
+  4000b8:	0000000c 	syscall
+  4000bc:	00404821 	move	t1,v0
+  4000c0:	3c05cafe 	lui	a1,0xcafe
+  4000c4:	34a5babe 	ori	a1,a1,0xbabe
+  4000c8:	ad250000 	sw	a1,0(t1)
+  4000cc:	ad250004 	sw	a1,4(t1)
+  4000d0:	3c06f00d 	lui	a2,0xf00d
+  4000d4:	34c6cafe 	ori	a2,a2,0xcafe
+  4000d8:	8c060000 	lw	a2,0(zero)
+  4000dc:	00000000 	nop
+  4000e0:	14c00024 	bnez	a2,400174 <failMEMB>
+  4000e4:	00000000 	nop
+  4000e8:	c12a0004 	lwc0	c0_entryhi,4(t1)
+  4000ec:	11400011 	beqz	t2,400134 <failLL>
+  4000f0:	00000000 	nop
+  4000f4:	254a0001 	addiu	t2,t2,1
+  4000f8:	e12a0004 	swc0	c0_entryhi,4(t1)
+  4000fc:	11400011 	beqz	t2,400144 <failSC1>
+  400100:	00000000 	nop
+  400104:	24010001 	li	at,1
+  400108:	15410012 	bne	t2,at,400154 <failSC11>
+  40010c:	00000000 	nop
+  400110:	c12b0000 	lwc0	$11,0(t1)
+  400114:	e12b0008 	swc0	$11,8(t1)
+  400118:	15600012 	bnez	t3,400164 <failSC2>
+  40011c:	00000000 	nop
+  400120:	00000000 	nop
+
+00400124 <pass>:
+  400124:	1000ffff 	b	400124 <pass>
+  400128:	00000000 	nop
+	...
+
+00400134 <failLL>:
+  400134:	1000ffff 	b	400134 <failLL>
+  400138:	00000000 	nop
+	...
+
+00400144 <failSC1>:
+  400144:	1000ffff 	b	400144 <failSC1>
+  400148:	00000000 	nop
+	...
+
+00400154 <failSC11>:
+  400154:	1000ffff 	b	400154 <failSC11>
+  400158:	00000000 	nop
+	...
+
+00400164 <failSC2>:
+  400164:	1000ffff 	b	400164 <failSC2>
+  400168:	00000000 	nop
+	...
+
+00400174 <failMEMB>:
+  400174:	1000ffff 	b	400174 <failMEMB>
+  400178:	00000000 	nop
+	...

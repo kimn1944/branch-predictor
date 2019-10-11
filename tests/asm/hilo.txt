@@ -1,0 +1,34 @@
+
+hilo:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	0008025e 	0x8025e
+	...
+  4000a8:	00418100 	0x418100
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20030003 	addi	v1,zero,3
+  4000b4:	00630018 	mult	v1,v1
+  4000b8:	00004812 	mflo	t1
+  4000bc:	20020002 	addi	v0,zero,2
+  4000c0:	00000000 	nop
+  4000c4:	00420018 	mult	v0,v0
+  4000c8:	00002012 	mflo	a0
+  4000cc:	20030003 	addi	v1,zero,3
+  4000d0:	20130013 	addi	s3,zero,19
+  4000d4:	0263001a 	div	zero,s3,v1
+  4000d8:	00003012 	mflo	a2
+  4000dc:	00000810 	mfhi	at
+	...
+  4000e8:	00600011 	mthi	v1
+  4000ec:	00800013 	mtlo	a0
+  4000f0:	20030000 	addi	v1,zero,0
+  4000f4:	20040000 	addi	a0,zero,0
+  4000f8:	00002012 	mflo	a0
+  4000fc:	00001810 	mfhi	v1
+	...

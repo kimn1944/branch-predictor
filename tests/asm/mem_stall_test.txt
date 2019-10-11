@@ -1,0 +1,69 @@
+
+mem_stall_test:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000334 	0x334
+	...
+  4000a8:	00418140 	0x418140
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	8c080100 	lw	t0,256(zero)
+  4000b4:	10000007 	b	4000d4 <CONTINUE1>
+  4000b8:	00000000 	nop
+
+004000bc <FAILED1>:
+  4000bc:	24020fb4 	li	v0,4020
+  4000c0:	0000000c 	syscall
+  4000c4:	00402021 	move	a0,v0
+  4000c8:	24050009 	li	a1,9
+  4000cc:	24020fc5 	li	v0,4037
+  4000d0:	0000000c 	syscall
+
+004000d4 <CONTINUE1>:
+  4000d4:	8c090204 	lw	t1,516(zero)
+  4000d8:	00000000 	nop
+  4000dc:	10000007 	b	4000fc <CONTINUE2>
+  4000e0:	00000000 	nop
+
+004000e4 <FAILED2>:
+  4000e4:	24020fb4 	li	v0,4020
+  4000e8:	0000000c 	syscall
+  4000ec:	00402021 	move	a0,v0
+  4000f0:	24050009 	li	a1,9
+  4000f4:	24020fc5 	li	v0,4037
+  4000f8:	0000000c 	syscall
+
+004000fc <CONTINUE2>:
+  4000fc:	8c090304 	lw	t1,772(zero)
+	...
+  400108:	10000007 	b	400128 <CONTINUE3>
+  40010c:	00000000 	nop
+
+00400110 <FAILED3>:
+  400110:	24020fb4 	li	v0,4020
+  400114:	0000000c 	syscall
+  400118:	00402021 	move	a0,v0
+  40011c:	24050009 	li	a1,9
+  400120:	24020fc5 	li	v0,4037
+  400124:	0000000c 	syscall
+
+00400128 <CONTINUE3>:
+  400128:	10000007 	b	400148 <CONTINUE4>
+  40012c:	8c090404 	lw	t1,1028(zero)
+
+00400130 <FAILED4>:
+  400130:	24020fb4 	li	v0,4020
+  400134:	0000000c 	syscall
+  400138:	00402021 	move	a0,v0
+  40013c:	24050009 	li	a1,9
+  400140:	24020fc5 	li	v0,4037
+  400144:	0000000c 	syscall
+
+00400148 <CONTINUE4>:
+  400148:	24020fa1 	li	v0,4001
+  40014c:	0000000c 	syscall

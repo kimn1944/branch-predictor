@@ -1,0 +1,31 @@
+
+cp0test:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+004000b4 <.reginfo>:
+  4000b4:	00300240 	0x300240
+	...
+  4000c8:	00418100 	0x418100
+
+Disassembly of section .text:
+
+004000d0 <__start>:
+  4000d0:	3c140041 	lui	s4,0x41
+  4000d4:	36940100 	ori	s4,s4,0x100
+  4000d8:	22950004 	addi	s5,s4,4
+  4000dc:	8e890000 	lw	t1,0(s4)
+  4000e0:	c2850000 	lwc0	$5,0(s4)
+  4000e4:	00000000 	nop
+  4000e8:	e2a50000 	swc0	$5,0(s5)
+  4000ec:	8ea60000 	lw	a2,0(s5)
+	...
+
+Disassembly of section .data:
+
+00410100 <_fdata>:
+  410100:	deadbeef 	0xdeadbeef
+
+00410104 <value2>:
+	...

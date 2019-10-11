@@ -1,0 +1,50 @@
+
+linktest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+004000b4 <.reginfo>:
+  4000b4:	92000114 	lbu	zero,276(s0)
+	...
+  4000c8:	00418120 	0x418120
+
+Disassembly of section .text:
+
+004000d0 <__start>:
+  4000d0:	8f998018 	lw	t9,-32744(gp)
+  4000d4:	00000000 	nop
+  4000d8:	0411000a 	bal	400104 <sub1>
+  4000dc:	00000000 	nop
+  4000e0:	8f82801c 	lw	v0,-32740(gp)
+  4000e4:	00000000 	nop
+  4000e8:	24420110 	addiu	v0,v0,272
+  4000ec:	00000000 	nop
+  4000f0:	0040f809 	jalr	v0
+  4000f4:	00000000 	nop
+  4000f8:	00000000 	nop
+  4000fc:	10000007 	b	40011c <end>
+  400100:	00000000 	nop
+
+00400104 <sub1>:
+  400104:	20040004 	addi	a0,zero,4
+  400108:	03e00008 	jr	ra
+  40010c:	00000000 	nop
+
+00400110 <sub2>:
+  400110:	20080008 	addi	t0,zero,8
+  400114:	03e00008 	jr	ra
+  400118:	00000000 	nop
+
+0040011c <end>:
+  40011c:	24020fa1 	li	v0,4001
+  400120:	0000000c 	syscall
+	...
+
+Disassembly of section .got:
+
+00410130 <_GLOBAL_OFFSET_TABLE_>:
+  410130:	00000000 	nop
+  410134:	80000000 	lb	zero,0(zero)
+  410138:	00400104 	0x400104
+  41013c:	00400000 	0x400000

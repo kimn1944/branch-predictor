@@ -1,0 +1,21 @@
+
+test:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	0000007e 	0x7e
+	...
+  4000a8:	004180c0 	0x4180c0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20010001 	addi	at,zero,1
+  4000b4:	20020002 	addi	v0,zero,2
+  4000b8:	20030003 	addi	v1,zero,3
+  4000bc:	20040004 	addi	a0,zero,4
+  4000c0:	20050005 	addi	a1,zero,5
+  4000c4:	20060006 	addi	a2,zero,6
+	...

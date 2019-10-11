@@ -1,0 +1,33 @@
+
+mvtest:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	82600018 	lb	zero,24(s3)
+	...
+  4000a8:	004180f0 	0x4180f0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20030003 	addi	v1,zero,3
+  4000b4:	3c150040 	lui	s5,0x40
+  4000b8:	36b500f0 	ori	s5,s5,0xf0
+  4000bc:	1064000c 	beq	v1,a0,4000f0 <success>
+  4000c0:	00000000 	nop
+	...
+  4000d8:	20040004 	addi	a0,zero,4
+  4000dc:	02a0c821 	move	t9,s5
+  4000e0:	0320f809 	jalr	t9
+  4000e4:	0080b021 	move	s6,a0
+
+004000e8 <fail>:
+  4000e8:	1000ffff 	b	4000e8 <fail>
+  4000ec:	00000000 	nop
+
+004000f0 <success>:
+  4000f0:	1000ffff 	b	4000f0 <success>
+  4000f4:	00000000 	nop
+	...

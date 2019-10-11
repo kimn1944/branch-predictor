@@ -1,0 +1,22 @@
+
+systest.easy:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	00000004 	sllv	zero,zero,zero
+	...
+  4000a8:	004180c0 	0x4180c0
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20020fa1 	addi	v0,zero,4001
+  4000b4:	00000000 	nop
+  4000b8:	0000000c 	syscall
+
+004000bc <fail>:
+  4000bc:	1000ffff 	b	4000bc <fail>
+  4000c0:	00000000 	nop
+	...

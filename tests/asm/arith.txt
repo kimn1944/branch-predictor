@@ -1,0 +1,41 @@
+
+arith:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+00400094 <.reginfo>:
+  400094:	000803fe 	0x803fe
+	...
+  4000a8:	00418110 	0x418110
+
+Disassembly of section .text:
+
+004000b0 <__start>:
+  4000b0:	20010001 	addi	at,zero,1
+  4000b4:	00211020 	add	v0,at,at
+  4000b8:	00422020 	add	a0,v0,v0
+  4000bc:	00443020 	add	a2,v0,a0
+  4000c0:	00c24020 	add	t0,a2,v0
+  4000c4:	00c12822 	sub	a1,a2,at
+  4000c8:	00811822 	sub	v1,a0,at
+  4000cc:	00630018 	mult	v1,v1
+  4000d0:	00004812 	mflo	t1
+  4000d4:	00211026 	xor	v0,at,at
+  4000d8:	00211826 	xor	v1,at,at
+  4000dc:	00212026 	xor	a0,at,at
+  4000e0:	00212826 	xor	a1,at,at
+  4000e4:	00213026 	xor	a2,at,at
+  4000e8:	00213826 	xor	a3,at,at
+  4000ec:	00214826 	xor	t1,at,at
+  4000f0:	00012080 	sll	a0,at,0x2
+  4000f4:	00041042 	srl	v0,a0,0x1
+  4000f8:	00210826 	xor	at,at,at
+  4000fc:	00211026 	xor	v0,at,at
+  400100:	00212026 	xor	a0,at,at
+  400104:	20030003 	addi	v1,zero,3
+  400108:	20130013 	addi	s3,zero,19
+  40010c:	0263001a 	div	zero,s3,v1
+  400110:	00003012 	mflo	a2
+  400114:	00000810 	mfhi	at
+	...

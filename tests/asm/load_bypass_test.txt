@@ -1,0 +1,44 @@
+
+load_bypass_test:     file format elf32-tradbigmips
+
+
+Disassembly of section .reginfo:
+
+004000b4 <.reginfo>:
+  4000b4:	00000212 	0x212
+	...
+  4000c8:	00418110 	0x418110
+
+Disassembly of section .text:
+
+004000d0 <__start>:
+  4000d0:	00000820 	add	at,zero,zero
+  4000d4:	3c090041 	lui	t1,0x41
+  4000d8:	8d240110 	lw	a0,272(t1)
+  4000dc:	00000000 	nop
+  4000e0:	8d240114 	lw	a0,276(t1)
+  4000e4:	00000000 	nop
+
+004000e8 <repeat>:
+  4000e8:	00800008 	jr	a0
+  4000ec:	20210001 	addi	at,at,1
+  4000f0:	00000000 	nop
+
+004000f4 <place1>:
+  4000f4:	2009002a 	addi	t1,zero,42
+  4000f8:	00000000 	nop
+
+004000fc <end>:
+  4000fc:	10000000 	b	400100 <end+0x4>
+  400100:	1000fffe 	b	4000fc <end>
+  400104:	00000000 	nop
+	...
+
+Disassembly of section .data:
+
+00410110 <_fdata>:
+  410110:	004000e8 	0x4000e8
+
+00410114 <place1_location>:
+  410114:	004000f4 	0x4000f4
+	...
