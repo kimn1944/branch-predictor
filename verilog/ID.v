@@ -21,7 +21,7 @@
 module ID(
     input CLK,
     input RESET,
-    input FLUSH,
+    // input FLUSH,
 	 //Instruction from Fetch
     input[31:0]Instr_IN,
 	 //PC of instruction fetched
@@ -300,28 +300,28 @@ always @(posedge CLK or negedge RESET) begin
   		INHIBIT_FREEZE <= 0;
 	    $display("ID:RESET");
 	end
-  else if(FLUSH) begin
-      Alt_PC <= 0;
-      Request_Alt_PC <= 0;
-      Instr1_OUT <= 0;
-      OperandA1_OUT <= 0;
-      OperandB1_OUT <= 0;
-      ReadRegisterA1_OUT <= 0;
-      ReadRegisterB1_OUT <= 0;
-      WriteRegister1_OUT <= 0;
-      MemWriteData1_OUT <= 0;
-      RegWrite1_OUT <= 0;
-      ALU_Control1_OUT <= 0;
-      MemRead1_OUT <= 0;
-      MemWrite1_OUT <= 0;
-      ShiftAmount1_OUT <= 0;
-      Instr1_PC_OUT <= 0;
-      SYS <= 0;
-      syscall_bubble_counter <= 0;
-      FORCE_FREEZE <= 0;
-      INHIBIT_FREEZE <= 0;
-      $display("ID:RESET");
-  end
+  // else if(FLUSH) begin
+  //     Alt_PC <= 0;
+  //     Request_Alt_PC <= 0;
+  //     Instr1_OUT <= 0;
+  //     OperandA1_OUT <= 0;
+  //     OperandB1_OUT <= 0;
+  //     ReadRegisterA1_OUT <= 0;
+  //     ReadRegisterB1_OUT <= 0;
+  //     WriteRegister1_OUT <= 0;
+  //     MemWriteData1_OUT <= 0;
+  //     RegWrite1_OUT <= 0;
+  //     ALU_Control1_OUT <= 0;
+  //     MemRead1_OUT <= 0;
+  //     MemWrite1_OUT <= 0;
+  //     ShiftAmount1_OUT <= 0;
+  //     Instr1_PC_OUT <= 0;
+  //     SYS <= 0;
+  //     syscall_bubble_counter <= 0;
+  //     FORCE_FREEZE <= 0;
+  //     INHIBIT_FREEZE <= 0;
+  //     $display("ID:RESET");
+  // end
   else begin
       Alt_PC <= Alt_PC1;
       Request_Alt_PC <= Request_Alt_PC1;

@@ -255,7 +255,7 @@ module MIPS (
 	ID ID(
 		.CLK(CLK),
 		.RESET(RESET),
-    .FLUSH(Request_Alt_PC_IDEXE),
+    // .FLUSH(Request_Alt_PC_IDEXE),
 		.Instr_IN(Instr1_dummy7),
 		.Instr1_PC_IN(Instr_PC_dummy7),
 		.Instr1_PC_Plus4_IN(Instr_PC_Plus4_dummy7),
@@ -265,7 +265,7 @@ module MIPS (
 		.Alt_PC(Alt_PC_IDEXE),
 		.Request_Alt_PC(Request_Alt_PC_IDEXE),
 		.Instr1_OUT(Instr1_IDEXE),
-        .Instr1_PC_OUT(Instr1_PC_IDEXE),
+    .Instr1_PC_OUT(Instr1_PC_IDEXE),
 		.OperandA1_OUT(OperandA1_IDEXE),
 		.OperandB1_OUT(OperandB1_IDEXE),
 `ifdef HAS_FORWARDING
@@ -273,8 +273,8 @@ module MIPS (
 		.ReadRegisterB1_OUT(RegisterB1_IDEXE),
 `else
 /* verilator lint_off PINCONNECTEMPTY */
-        .ReadRegisterA1_OUT(),
-        .ReadRegisterB1_OUT(),
+    .ReadRegisterA1_OUT(),
+    .ReadRegisterB1_OUT(),
 /* verilator lint_on PINCONNECTEMPTY */
 `endif
 		.WriteRegister1_OUT(WriteRegister1_IDEXE),
@@ -296,9 +296,9 @@ module MIPS (
 		.WANT_FREEZE(STALL_IDIF)
 	);
 
-	wire [31:0] Instr1_EXEMEM;
-	wire [31:0] Instr1_PC_EXEMEM;
-	wire [31:0] ALU_result1_EXEMEM;
+    wire [31:0] Instr1_EXEMEM;
+    wire [31:0] Instr1_PC_EXEMEM;
+    wire [31:0] ALU_result1_EXEMEM;
     wire [4:0]  WriteRegister1_EXEMEM;
     wire [31:0] MemWriteData1_EXEMEM;
     wire        RegWrite1_EXEMEM;
@@ -319,8 +319,8 @@ module MIPS (
 		.RESET(RESET),
 		.Instr1_IN(Instr1_IDEXE),
 		.Instr1_PC_IN(Instr1_PC_IDEXE),
-                .Request_Alt_PC(Request_Alt_PC_IDEXE),
-                .Alt_PC(Alt_PC_IDEXE),
+    .Request_Alt_PC(Request_Alt_PC_IDEXE),
+    .Alt_PC(Alt_PC_IDEXE),
 `ifdef HAS_FORWARDING
 		.RegisterA1_IN(RegisterA1_IDEXE),
 `endif
@@ -345,8 +345,8 @@ module MIPS (
 		.ALU_Control1_OUT(ALU_Control1_EXEMEM),
 		.MemRead1_OUT(MemRead1_EXEMEM),
 		.MemWrite1_OUT(MemWrite1_EXEMEM),
-                .Alt_PC1(Alt_PC_EXEMEM),
-                .Request_Alt_PC1(Request_Alt_PC_EXEMEM)
+    .Alt_PC1(Alt_PC_EXEMEM),
+    .Request_Alt_PC1(Request_Alt_PC_EXEMEM)
 `ifdef HAS_FORWARDING
 		,
 		.BypassReg1_MEMEXE(WriteRegister1_MEMWB),
