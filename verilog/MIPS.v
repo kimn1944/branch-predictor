@@ -229,6 +229,12 @@ module MIPS (
     wire [31:0] Instr1_PC_IDEXE;
     wire [31:0] OperandA1_IDEXE;
     wire [31:0] OperandB1_IDEXE;
+    
+    // *************************************************************************
+    wire JorB;
+    wire TAKEN;
+    // *************************************************************************
+
 `ifdef HAS_FORWARDING
     wire [4:0]  RegisterA1_IDEXE;
     wire [4:0]  RegisterB1_IDEXE;
@@ -251,11 +257,25 @@ module MIPS (
     wire        BypassValid1_MEMID;
 `endif
 
+    // *************************************************************************
+FSM FSM(
+  .CLK(CLK),
+  .RESET(RESET),
+  .TAKEN(TAKEN),
+  .UPDATE(JorB),
+
+  .PREDICTION()
+  );
+    // *************************************************************************
 
 	ID ID(
 		.CLK(CLK),
 		.RESET(RESET),
+    // *************************************************************************
     // .FLUSH(Request_Alt_PC_IDEXE),
+    .JorB(JorB),
+    .TAKEN(TAKEN),
+    // *************************************************************************
 		.Instr_IN(Instr1_dummy7),
 		.Instr1_PC_IN(Instr_PC_dummy7),
 		.Instr1_PC_Plus4_IN(Instr_PC_Plus4_dummy7),

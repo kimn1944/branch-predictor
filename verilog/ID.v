@@ -66,6 +66,11 @@ module ID(
     //Shift amount [for ALU functions] (passed to EXE)
     output reg [4:0]ShiftAmount1_OUT,
 
+    // *************************************************************************
+    output JorB,
+    output TAKEN,
+    // *************************************************************************
+
 `ifdef HAS_FORWARDING
     //Bypass inputs for calculations that have completed EXE
     input [4:0]     BypassReg1_EXEID,
@@ -275,7 +280,10 @@ RegFile RegFile (
 	 reg INHIBIT_FREEZE;
      assign WANT_FREEZE = ((FORCE_FREEZE | syscal1) && !INHIBIT_FREEZE);
 
-
+    // *************************************************************************
+     assign JorB = jump1 | branch1;
+     assign TAKEN = Request_Alt_PC1;
+    // *************************************************************************
 
 always @(posedge CLK or negedge RESET) begin
 	if(!RESET) begin
