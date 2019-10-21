@@ -110,6 +110,8 @@ module BTB (
     end
 
     // updating BTB with values from the ID
+    // TODO Predictor and BTB have separate isBranch. BTB is updated is only taken when branch is taken
+    // No need to check address.
     always @(posedge is_Branch_IN_ID) begin
         if(RESET) begin
             past_pred_ID <= pred[pred_index_ID];
