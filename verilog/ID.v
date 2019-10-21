@@ -67,8 +67,10 @@ module ID(
     output reg [4:0]ShiftAmount1_OUT,
 
     // *************************************************************************
-    output JorB,
-    output TAKEN,
+    output isBranch,
+    output isTaken,
+    output [31:0] Alt_PC_OUT_ID,
+
     // *************************************************************************
 
 `ifdef HAS_FORWARDING
@@ -281,8 +283,9 @@ RegFile RegFile (
      assign WANT_FREEZE = ((FORCE_FREEZE | syscal1) && !INHIBIT_FREEZE);
 
     // *************************************************************************
-     assign JorB = jump1 | branch1;
-     assign TAKEN = Request_Alt_PC1;
+     assign isBranch = jump1 | branch1;
+     assign isTaken = Request_Alt_PC1;
+     assign Alt_PC_OUT_ID = Alt_PC1;
     // *************************************************************************
 
 always @(posedge CLK or negedge RESET) begin

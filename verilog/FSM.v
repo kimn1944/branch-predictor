@@ -1,32 +1,35 @@
 module FSM (
     input CLK,
     input RESET,
-    input TAKEN,
-    input UPDATE,
+    input isTaken,
+    input isBranch,
+    input [31:0] InstrPC,
 
-    output PREDICTION
+    output reg [1023:0] Pred
 );
+    reg [1023:0] A;
+    reg [1023:0] B;
+    wire [9:0] index;
+    assign index = InstrPC[11:2];
 
-    reg A;
-    reg B;
-    wire Q;
-    assign Q = TAKEN;
-
-    always @(posedge UPDATE or negedge RESET) begin
-        if (!RESET) begin
-            A <= 1;
-            B <= 0;
+    integer i;
+    always @(posedge isBranch or negedge RESET) begin
+        if(!RESET) begin
+            for (i = 0; i < 1024; i = i + 1) begin
+                A[i] <= 1;
+                B[i] <= 0;
+                Pred[i] <= 1;
+            end
+        end else begin
+            A[index] <= A[index]&B[index] | A[index]&isTaken | B[index]&isTaken;
+            B[index] <= A[index]&~B[index] | A[index]&isTaken | ~B[index]&isTaken;
+            Pred[index] <= A[index]&B[index] | A[index]&isTaken | B[index]&isTaken;
         end
-        // if (UPDATE) begin
-        else begin
-            A <= A&B | A&Q | B&Q;
-            B <= A&~B | A&Q | ~B&Q;
-        end
-        // $display("UPDATE = %x, TAKEN = %x", UPDATE, TAKEN);
-        // $display("AB = %x%x", A, B);
-        // $display("PREDICTION = %x", PREDICTION);
     end
 
-    assign PREDICTION = A;
-
+    always begin
+        $display("isBranch = %x, isTaken = %x", isBranch, isTaken);
+        $display("AB = %x%x", A[index], B[index]);
+        $display("Pred = %x for %x", Pred[index], InstrPC);
+    end
 endmodule

@@ -128,15 +128,15 @@ module MIPS (
         .Instr_PC_OUT(Instr_PC_IFID),
         .Instr_PC_Plus4(Instr_PC_Plus4_IFID),
         .STALL(STALL_IDIF),
-        .Request_Alt_PC(Request_Alt_PC_IDEXE),
-        .Alt_PC(Alt_PC_IDEXE),
+        .Request_Alt_PC(take_Branch_OUT_IF),
+        .Alt_PC(take_Alt_PC_OUT_IF),
         .Instr_address_2IM(Instr_address_2IC),
         .Instr1_fIM(Instr1_fIC)
     );
    dummy dummy(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy1),
            .Instr_PC_OUT(Instr_PC_dummy1),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy1),
@@ -149,7 +149,7 @@ module MIPS (
    dummy1 dummy1(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy2),
            .Instr_PC_OUT(Instr_PC_dummy2),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy2),
@@ -162,7 +162,7 @@ module MIPS (
     dummy2 dummy2(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy3),
            .Instr_PC_OUT(Instr_PC_dummy3),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy3),
@@ -174,7 +174,7 @@ module MIPS (
     dummy3 dummy3(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy4),
            .Instr_PC_OUT(Instr_PC_dummy4),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy4),
@@ -186,7 +186,7 @@ module MIPS (
     dummy4 dummy4(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy5),
            .Instr_PC_OUT(Instr_PC_dummy5),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy5),
@@ -198,7 +198,7 @@ module MIPS (
     dummy5 dummy5(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy6),
            .Instr_PC_OUT(Instr_PC_dummy6),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy6),
@@ -211,7 +211,7 @@ module MIPS (
     dummy6 dummy6(
            .CLK(CLK),
            .RESET(RESET),
-           .FLUSH(Request_Alt_PC_IDEXE),
+           .FLUSH(FLUSH),
            .Instr1_OUT(Instr1_dummy7),
            .Instr_PC_OUT(Instr_PC_dummy7),
            .Instr_PC_Plus4(Instr_PC_Plus4_dummy7),
@@ -229,10 +229,14 @@ module MIPS (
     wire [31:0] Instr1_PC_IDEXE;
     wire [31:0] OperandA1_IDEXE;
     wire [31:0] OperandB1_IDEXE;
-    
+
     // *************************************************************************
-    wire JorB;
-    wire TAKEN;
+    wire isBranch;
+    wire isTaken;
+    wire [31:0] Alt_PC_OUT_ID;
+    wire FLUSH;
+    wire take_Branch_OUT_IF;
+    reg [31:0] take_Alt_PC_OUT_IF;
     // *************************************************************************
 
 `ifdef HAS_FORWARDING
@@ -258,13 +262,20 @@ module MIPS (
 `endif
 
     // *************************************************************************
-FSM FSM(
-  .CLK(CLK),
-  .RESET(RESET),
-  .TAKEN(TAKEN),
-  .UPDATE(JorB),
+  BTB BTB(
+    .CLK(CLK),
+    .RESET(RESET),
 
-  .PREDICTION()
+    .Instr_PC_IN_IF(Instr_PC_IFID),
+
+    .Instr_PC_IN_ID(Instr_PC_dummy7),
+    .is_Branch_IN_ID(isBranch),
+    .is_Taken_IN_ID(isTaken),
+    .Alt_PC_IN_ID(Alt_PC_OUT_ID),
+
+    .FLUSH(FLUSH),
+    .take_Branch_OUT_IF(take_Branch_OUT_IF),
+    .take_Alt_PC_OUT_IF(take_Alt_PC_OUT_IF)
   );
     // *************************************************************************
 
@@ -273,8 +284,9 @@ FSM FSM(
 		.RESET(RESET),
     // *************************************************************************
     // .FLUSH(Request_Alt_PC_IDEXE),
-    .JorB(JorB),
-    .TAKEN(TAKEN),
+    .isBranch(isBranch),
+    .isTaken(isTaken),
+    .Alt_PC_OUT_ID(Alt_PC_OUT_ID),
     // *************************************************************************
 		.Instr_IN(Instr1_dummy7),
 		.Instr1_PC_IN(Instr_PC_dummy7),
