@@ -265,6 +265,7 @@ module MIPS (
   BTB BTB(
     .CLK(CLK),
     .RESET(RESET),
+    .STALL(STALL_IDIF),
 
     .Instr_PC_IN_IF(Instr_PC_IFID),
 

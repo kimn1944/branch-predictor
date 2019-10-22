@@ -2,6 +2,7 @@ module BTB (
     // general inputs
     input CLK,
     input RESET,
+    input STALL,
 
     // IF inputs
     input [31:0] Instr_PC_IN_IF,
@@ -18,7 +19,7 @@ module BTB (
     output reg [31:0] take_Alt_PC_OUT_IF
 );
     // cache structure
-    reg [106:0] cache[511:0];
+    reg [106:0] cache [511:0];
     // predictor structure, connecting the updowncounters to get predictions
     wire [1023:0] pred;
     FSM FSM (
@@ -62,9 +63,11 @@ module BTB (
     wire tag1_IF_match;
     wire tag2_IF_match;
     wire [31:0] Instr_PC_IN_IF_Plus4;
+    wire take_IF;
     assign tag1_IF_match = (tag1_IF == tag_IF) && valid1_IF;
     assign tag2_IF_match = (tag2_IF == tag_IF) && valid2_IF;
-    assign Instr_PC_IN_IF_Plus4 = Instr_PC_IN_IF+ 32'd4;
+    assign Instr_PC_IN_IF_Plus4 = Instr_PC_IN_IF + 32'd4;
+    assign take_IF = pred1_IF && (tag1_IF_match || tag2_IF_match);
     assign new_pred_inst_IF = tag1_IF_match ? (pred1_IF ? {address1_IF, 2'b0} : Instr_PC_IN_IF_Plus4) : (tag2_IF_match ? (pred2_IF ? {address2_IF, 2'b0} : (Instr_PC_IN_IF_Plus4)) : (Instr_PC_IN_IF_Plus4));
 
     // ID wiring
@@ -96,14 +99,21 @@ module BTB (
     assign address2_ID = cache[index_ID][30:1];
     assign pred2_ID = pred[pred_index_ID];          // cache[index_ID][0];
     // updating stuff for ID
-    reg past_pred_ID;
-    reg [31:0] past_pred_inst_ID;
+    reg [31:0] past_instrs [6:0];
+    reg [6:0] past_decisions;
     wire tag1_ID_match;
     wire tag2_ID_match;
     wire [31:0] Instr_PC_IN_ID_Plus4;
+    wire past_take_ID;
+    wire [31:0] past_pred_inst_ID;
+    assign past_take_ID = past_decisions[0];
+    assign past_pred_inst_ID = past_instrs[0];
     assign tag1_ID_match = (tag1_ID == tag_ID) && valid1_ID;
     assign tag2_ID_match = (tag2_ID == tag_ID) && valid2_ID;
     assign Instr_PC_IN_ID_Plus4 = Instr_PC_IN_ID + 32'd4;
+
+    wire mispred;
+    assign mispred = past_take_ID ? (is_Taken_IN_ID ? ((past_pred_inst_ID == Alt_PC_IN_ID) ? 0 : 1) : 1) : (is_Taken_IN_ID ? 1 : 0);
 
     always begin
         $display("____________Take the branch? %x Where to? %x", take_Branch_OUT_IF, take_Alt_PC_OUT_IF);
@@ -113,27 +123,15 @@ module BTB (
     // TODO Predictor and BTB have separate isBranch. BTB is updated is only taken when branch is taken
     // No need to check address.
     always @(posedge is_Branch_IN_ID) begin
-        if(RESET) begin
-            past_pred_ID <= pred[pred_index_ID];
-            past_pred_inst_ID <= tag1_ID_match ? (past_pred_ID ? {address1_ID, 2'b0} : Instr_PC_IN_ID_Plus4) : (tag2_ID_match ? (past_pred_ID ? {address2_ID, 2'b0} : (Instr_PC_IN_ID_Plus4)) : (Instr_PC_IN_ID_Plus4));
-            if(tag1_ID_match) begin
-                cache[index_ID][83:54] <= Alt_PC_IN_ID[31:2];
-                cache[index_ID][106] <= 0;
-            end else if(tag2_ID_match) begin
-                cache[index_ID][30:1] <= Alt_PC_IN_ID[31:2];
-                cache[index_ID][106] <= 1;
+        if(RESET && !STALL) begin
+            if(tag1_ID_match || tag2_ID_match) begin
+                cache[index_ID][105:54] <= tag1_ID_match ? {1'b1, tag_ID, Alt_PC_IN_ID[31:2]} : {valid1_ID, tag1_ID, address1_ID};
+                cache[index_ID][52:1] <= tag2_ID_match ? {1'b1, tag_ID, Alt_PC_IN_ID[31:2]} : {valid2_ID, tag2_ID, address2_ID};
+                cache[index_ID][106] <= tag1_ID_match;
             end else begin
-                if(last_recently_used) begin
-                    cache[index_ID][105] <= 1;
-                    cache[index_ID][104:84] <= tag_ID;
-                    cache[index_ID][83:54] <= Alt_PC_IN_ID[31:2];
-                    cache[index_ID][106] <= 0;
-                end else begin
-                    cache[index_ID][52] <= 1;
-                    cache[index_ID][51:31] <= tag_ID;
-                    cache[index_ID][30:1] <= Alt_PC_IN_ID[31:2];
-                    cache[index_ID][106] <= 1;
-                end
+                cache[index_ID][105:54] <= last_recently_used ? {valid1_ID, tag1_ID, address1_ID} : {1'b1, tag_ID, Alt_PC_IN_ID[31:2]};
+                cache[index_ID][52:1] <= last_recently_used ? {1'b1, tag_ID, Alt_PC_IN_ID[31:2]} : {valid2_ID, tag2_ID, address2_ID};
+                cache[index_ID][106] <= ~last_recently_used;
             end
         end
     end
@@ -145,50 +143,29 @@ module BTB (
             FLUSH <= 0;
             take_Branch_OUT_IF <= 0;
             take_Alt_PC_OUT_IF <= 0;
-            for (i = 0; i < 512; i = i + 1) begin
+            past_decisions <= 0;
+            for(i = 0; i < 512; i = i + 1) begin
                 cache[i][105] = 0;
                 cache[i][52] = 0;
             end
-        end else begin
-            // if a branch is coming from ID
-            if(is_Branch_IN_ID) begin
-                if(past_pred_ID) begin
-                    if(is_Taken_IN_ID) begin
-                        if(past_pred_inst_ID == Alt_PC_IN_ID) begin
-                            // we good, supply IFprediction
-                            take_Branch_OUT_IF <= pred1_IF && (tag1_IF_match || tag2_IF_match);
-                            take_Alt_PC_OUT_IF <= new_pred_inst_IF;
-                            FLUSH <= 0;
-                        end else begin
-                            // TODO FLUSH and supply AltPC
-                            take_Branch_OUT_IF <= is_Taken_IN_ID;
-                            take_Alt_PC_OUT_IF <= Alt_PC_IN_ID;
-                            FLUSH <= 1;
-                        end
-                    end else begin
-                        // TODO FLUSH and supply Instr_PC_IN_ID_Plus4
-                        take_Branch_OUT_IF <= !is_Taken_IN_ID;
-                        take_Alt_PC_OUT_IF <= Instr_PC_IN_ID_Plus4;
-                        FLUSH <= 1;
-                    end
-                end else begin
-                    if(is_Taken_IN_ID) begin
-                        // TODO FLUSH and supply AltPC
-                        take_Branch_OUT_IF <= is_Taken_IN_ID;
-                        take_Alt_PC_OUT_IF <= Alt_PC_IN_ID;
-                        FLUSH <= 1;
-                    end else begin
-                        // we good, supply IFPrediction
-                        take_Branch_OUT_IF <= pred1_IF && (tag1_IF_match || tag2_IF_match);
-                        take_Alt_PC_OUT_IF <= new_pred_inst_IF;
-                        FLUSH <= 0;
-                    end
-                end
-            // otherwise do this
+            for(i = 0; i < 7; i = i + 1) begin
+                past_instrs[i] <= 0;
+            end
+        end else if(!STALL) begin
+            if(is_Branch_IN_ID && mispred) begin
+                take_Branch_OUT_IF <= 1;
+                take_Alt_PC_OUT_IF <= past_take_ID ? Instr_PC_IN_ID_Plus4 + 32'd4 : Alt_PC_IN_ID;
+                FLUSH <= 1;
+                past_decisions[6:0] <= {1'b1, past_decisions[6:1]};
+                past_instrs[6] <= past_take_ID ? Instr_PC_IN_ID_Plus4 + 32'd4 : Alt_PC_IN_ID;
+                past_instrs[5:0] <= past_instrs[6:1];
             end else begin
-                take_Branch_OUT_IF <= pred1_IF && (tag1_IF_match || tag2_IF_match);
+                take_Branch_OUT_IF <= take_IF;
                 take_Alt_PC_OUT_IF <= new_pred_inst_IF;
                 FLUSH <= 0;
+                past_decisions[6:0] <= {take_IF, past_decisions[6:1]};
+                past_instrs[6] <= new_pred_inst_IF;
+                past_instrs[5:0] <= past_instrs[6:1];
             end
         end
     end
