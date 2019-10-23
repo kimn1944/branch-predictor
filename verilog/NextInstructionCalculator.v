@@ -53,7 +53,7 @@ wire [31:0] branchDestination_immediate;
     assign jumpDestination_immediate = {Instr_PC_Plus4[31:28],Instruction[25:0],2'b00};
     assign branchDestination_immediate = Instr_PC_Plus4 + signExtended_shifted_immediate;
 
-    assign NextInstructionAddress = Jump?(JumpRegister?RegisterValue:jumpDestination_immediate):branchDestination_immediate;
+    assign NextInstructionAddress = Jump ? (JumpRegister ? RegisterValue : jumpDestination_immediate) : branchDestination_immediate;
 `else
     /* You'll want to assign these items to more sensible values */
 
@@ -66,7 +66,7 @@ wire [31:0] branchDestination_immediate;
     assign branchDestination_immediate = 32'd0;
 
     /* This is wrong; the assignments are here to avoid "Signal is not used" compile warnings. */
-    assign NextInstructionAddress = signExtended_shifted_immediate+jumpDestination_immediate+branchDestination_immediate;
+    assign NextInstructionAddress = signExtended_shifted_immediate + jumpDestination_immediate + branchDestination_immediate;
 `endif
 
 always @(Jump or JumpRegister or RegisterValue or Instr_PC_Plus4 or Instruction) begin
