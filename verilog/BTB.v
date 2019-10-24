@@ -66,14 +66,14 @@ module BTB (
     assign tag2_IF_match = (tag2_IF == tag_IF) && valid2_IF;
     assign Instr_PC_IN_IF_Plus4 = Instr_PC_IN_IF + 32'd4;
     assign take_IF = pred_IF && (tag1_IF_match || tag2_IF_match);
-    assign new_pred_inst_IF = tag1_IF_match ? (pred_IF ? address1_IF : Instr_PC_IN_IF_Plus4) : (tag2_IF_match ? (pred_IF ? address2_IF : (Instr_PC_IN_IF_Plus4)) : (Instr_PC_IN_IF_Plus4));
+    assign new_pred_inst_IF = take_IF ? (tag1_IF_match ? address1_IF : address2_IF) : Instr_PC_IN_IF_Plus4;
 
     //
     reg [6:0] past_decisions;
     wire past_pred;
     wire mispred;
     assign past_pred = past_decisions[0];
-    assign mispred = is_Branch_IN_ID ? (past_pred == is_Taken_IN_ID ? 0 : 1) : 0;
+    assign mispred = is_Branch_IN_ID ? ((past_pred == is_Taken_IN_ID) ? 0 : 1) : 0;
 
 
     // ID wiring
@@ -81,8 +81,10 @@ module BTB (
     // indexing into the cache with this info
     wire [8:0] index_ID;                // index from the ID
     wire [20:0] tag_ID;                 // tag from the ID
+    wire [9:0] pred_index_ID;
     assign index_ID = Instr_PC_IN_ID[10:2];
     assign tag_ID = Instr_PC_IN_ID[31:11];
+    assign pred_index_ID = Instr_PC_IN_ID[11:2];
     // getting the info from cache using the ID instruction
     wire last_recently_used;
     wire valid1_ID;
@@ -105,8 +107,8 @@ module BTB (
     assign tag2_ID_match = (tag2_ID == tag_ID) && valid2_ID;
     //
 
-    always @(posedge is_Branch_IN_ID) begin
-        if(is_Taken_IN_ID && RESET) begin
+    always @(posedge is_Taken_IN_ID) begin
+        if(is_Branch_IN_ID) begin
             if(!tag1_ID_match && !tag2_ID_match) begin
                 cache[index_ID][107:54] <= last_recently_used ? {1'b1, tag_ID, Alt_PC_IN_ID} : cache[index_ID][107:54];
                 cache[index_ID][53:0] <= last_recently_used ? cache[index_ID][53:0] : {1'b1, tag_ID, Alt_PC_IN_ID};
@@ -128,14 +130,10 @@ module BTB (
             end
         end else begin
             cache[index_IF][108] <= (take_IF && ~mispred) ? (tag1_IF_match ? 0 : 1) : (cache[index_IF][108]);
-            past_decisions[6:0] <= mispred ? (7'b0) : ({take_IF, past_decisions[6:1]});
+            past_decisions[6:0] <= mispred ? {6'b0, past_decisions[0]} : ({take_IF, past_decisions[6:1]});
             FLUSH <= mispred;
             take_Branch_OUT_IF <= take_IF || mispred;
-            take_Alt_PC_OUT_IF <= mispred ? (past_pred ? Instr_PC_IN_ID + 32'd8 : Alt_PC_IN_ID) : new_pred_inst_IF;
+            take_Alt_PC_OUT_IF <= mispred ? (is_Taken_IN_ID ? Alt_PC_IN_ID : Instr_PC_IN_ID + 32'd8) : new_pred_inst_IF;
         end
-        $display("____________Take the branch? %x Where to? %x", take_Branch_OUT_IF, take_Alt_PC_OUT_IF);
-        $display("____________Mispred %x Past Pred %x", mispred, past_pred);
-        $display("____________Take IF %x", take_IF);
-        $display("____________Past decisions %b", past_decisions);
     end
 endmodule

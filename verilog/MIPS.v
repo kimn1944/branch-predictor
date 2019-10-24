@@ -236,7 +236,7 @@ module MIPS (
     wire [31:0] Alt_PC_OUT_ID;
     wire FLUSH;
     wire take_Branch_OUT_IF;
-    reg [31:0] take_Alt_PC_OUT_IF;
+    wire [31:0] take_Alt_PC_OUT_IF;
     // *************************************************************************
 
 `ifdef HAS_FORWARDING

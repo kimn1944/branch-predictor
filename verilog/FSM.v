@@ -16,7 +16,7 @@ module FSM (
     always @(posedge isBranch or negedge RESET) begin
         if(!RESET) begin
             for (i = 0; i < 1024; i = i + 1) begin
-                A[i] <= 1;
+                A[i] <= 0;
                 B[i] <= 0;
                 Pred[i] <= 1;
             end

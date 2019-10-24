@@ -67,9 +67,9 @@ module ID(
     output reg [4:0]ShiftAmount1_OUT,
 
     // *************************************************************************
-    output isBranch,
-    output isTaken,
-    output [31:0] Alt_PC_OUT_ID,
+    output reg isBranch,
+    output reg isTaken,
+    output reg [31:0] Alt_PC_OUT_ID,
 
     // *************************************************************************
 
@@ -283,9 +283,11 @@ RegFile RegFile (
      assign WANT_FREEZE = ((FORCE_FREEZE | syscal1) && !INHIBIT_FREEZE);
 
     // *************************************************************************
-     assign isBranch = jump1 | branch1;
-     assign isTaken = Request_Alt_PC1;
-     assign Alt_PC_OUT_ID = Alt_PC1;
+     always begin
+         assign isBranch = jump1 || branch1;
+         assign isTaken = Request_Alt_PC1;
+         assign Alt_PC_OUT_ID = Alt_PC1;
+     end
     // *************************************************************************
 
 always @(posedge CLK or negedge RESET) begin
