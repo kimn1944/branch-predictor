@@ -19,6 +19,8 @@ module BTB (
     output reg [31:0] take_Alt_PC_OUT_IF
 );
     // cache structure
+    reg [31:0] branch_counter;
+    reg [31:0] miss_counter;
     reg [108:0] cache [511:0];
     // predictor structure, connecting the updowncounters to get predictions
     wire [1023:0] pred;
@@ -124,16 +126,22 @@ module BTB (
             take_Branch_OUT_IF <= 0;
             take_Alt_PC_OUT_IF <= 0;
             past_decisions[6:0] <= 7'b0;
+            branch_counter[31:0] <= 0;
+            miss_counter[31:0] <= 0;
             for(i = 0; i < 512; i = i + 1) begin
                 cache[i][107] = 0;
                 cache[i][53] = 0;
             end
         end else begin
+            branch_counter <= is_Branch_IN_ID ? branch_counter + 32'd1 : branch_counter;
+            miss_counter <= mispred ? miss_counter + 32'd1 : miss_counter;
             cache[index_IF][108] <= (take_IF && ~mispred) ? (tag1_IF_match ? 0 : 1) : (cache[index_IF][108]);
             past_decisions[6:0] <= mispred ? {6'b0, past_decisions[0]} : ({take_IF, past_decisions[6:1]});
             FLUSH <= mispred;
             take_Branch_OUT_IF <= take_IF || mispred;
             take_Alt_PC_OUT_IF <= mispred ? (is_Taken_IN_ID ? Alt_PC_IN_ID : Instr_PC_IN_ID + 32'd8) : new_pred_inst_IF;
+            $display("Total Branches: %d", branch_counter);
+            $display("Total Misses:   %d", miss_counter);
         end
     end
 endmodule
