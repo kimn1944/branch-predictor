@@ -255,7 +255,6 @@ module MIPS (
 	ID ID(
 		.CLK(CLK),
 		.RESET(RESET),
-    // .FLUSH(Request_Alt_PC_IDEXE),
 		.Instr_IN(Instr1_dummy7),
 		.Instr1_PC_IN(Instr_PC_dummy7),
 		.Instr1_PC_Plus4_IN(Instr_PC_Plus4_dummy7),

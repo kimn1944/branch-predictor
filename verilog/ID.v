@@ -21,7 +21,6 @@
 module ID(
     input CLK,
     input RESET,
-    // input FLUSH,
 	 //Instruction from Fetch
     input[31:0]Instr_IN,
 	 //PC of instruction fetched
@@ -75,7 +74,7 @@ module ID(
     //Bypass inputs for loads from memory (and previous-instruction EXE outputs)
     input [4:0]     BypassReg1_MEMID,
     input [31:0]    BypassData1_MEMID,
-    input               BypassValid1_MEMID,
+    input           BypassValid1_MEMID,
 `endif
 
 	 //Tell the simulator to process a system call
@@ -85,9 +84,9 @@ module ID(
     );
 
 
-         wire[31:0] Instr1_IN;
+     wire[31:0] Instr1_IN;
 	 wire[31:0] Instr_PC_IN;
-         wire[31:0] Instr_PC_Plus4_IN;
+     wire[31:0] Instr_PC_Plus4_IN;
 	 wire [5:0]	ALU_control1;	//async. ALU_Control output
 	 wire			link1;			//whether this is a "And Link" instruction
 	 wire			RegDst1;			//whether this instruction uses the "rd" register (Instr[15:11])
@@ -128,6 +127,9 @@ module ID(
      wire [15:0]    immediate1;
 
 	reg [2:0]	syscall_bubble_counter;
+    //************
+    integer missnum;
+    //************
 
      assign Instr1_IN = Instr_IN;
      assign Instr_PC_IN = Instr1_PC_IN;
@@ -298,33 +300,19 @@ always @(posedge CLK or negedge RESET) begin
   		syscall_bubble_counter <= 0;
   		FORCE_FREEZE <= 0;
   		INHIBIT_FREEZE <= 0;
+        //*****
+        missnum <= 0;
+        //*****
 	    $display("ID:RESET");
 	end
-  // else if(FLUSH) begin
-  //     Alt_PC <= 0;
-  //     Request_Alt_PC <= 0;
-  //     Instr1_OUT <= 0;
-  //     OperandA1_OUT <= 0;
-  //     OperandB1_OUT <= 0;
-  //     ReadRegisterA1_OUT <= 0;
-  //     ReadRegisterB1_OUT <= 0;
-  //     WriteRegister1_OUT <= 0;
-  //     MemWriteData1_OUT <= 0;
-  //     RegWrite1_OUT <= 0;
-  //     ALU_Control1_OUT <= 0;
-  //     MemRead1_OUT <= 0;
-  //     MemWrite1_OUT <= 0;
-  //     ShiftAmount1_OUT <= 0;
-  //     Instr1_PC_OUT <= 0;
-  //     SYS <= 0;
-  //     syscall_bubble_counter <= 0;
-  //     FORCE_FREEZE <= 0;
-  //     INHIBIT_FREEZE <= 0;
-  //     $display("ID:RESET");
-  // end
   else begin
       Alt_PC <= Alt_PC1;
       Request_Alt_PC <= Request_Alt_PC1;
+      //*******
+      if (Request_Alt_PC1)begin
+        missnum <= missnum + 1;
+      end
+      //*******
 			$display("ID:evaluation SBC=%d; syscal1=%d",syscall_bubble_counter,syscal1);
 			case (syscall_bubble_counter)
 				5,4,3: begin
@@ -392,6 +380,7 @@ always @(posedge CLK or negedge RESET) begin
 				Reg[WriteRegister_IN] <= WriteData_IN;
 				$display("IDWB:Reg[%d]=%x",WriteRegister_IN,WriteData_IN);
 			end*/
+            $display("\n__________________ID:number of miss prediction =%d", missnum);
 			if(comment1) begin
                 $display("ID1:Instr=%x,Instr_PC=%x,Req_Alt_PC=%d:Alt_PC=%x;SYS=%d(%d)",Instr1_IN,Instr_PC_IN,Request_Alt_PC1,Alt_PC1,syscal1,syscall_bubble_counter);
                 //$display("ID1:A:Reg[%d]=%x; B:Reg[%d]=%x; Write?%d to %d",RegA1, OpA1, RegB1, OpB1, (WriteRegister1!=5'd0)?RegWrite1:1'd0, WriteRegister1);
