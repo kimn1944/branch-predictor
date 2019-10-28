@@ -78,11 +78,21 @@ module ID(
     input               BypassValid1_MEMID,
 `endif
 
+//**********************************************************************
+    output reg is_branch,
+    output reg is_taken,
+//**********************************************************************
+
 	 //Tell the simulator to process a system call
 	 output reg SYS,
 	 //Tell fetch to stop advancing the PC, and wait.
 	 output WANT_FREEZE
     );
+
+//**********************************************************************
+    assign is_branch  = jump1 || branch1;
+    assign is_taken   = Request_Alt_PC1;
+//**********************************************************************
 
 
          wire[31:0] Instr1_IN;
