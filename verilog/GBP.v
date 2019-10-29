@@ -37,12 +37,12 @@ module GBP(
                 past_histories[i] = 0;
             end
             history <= 0;
-            pred <= 0;
+            pred    <= 0;
         end else begin
-            past_histories[7] <= history;
+            past_histories[7]   <= history;
             past_histories[6:0] <= past_histories[7:1];
-            history <= Is_Branch ? {Is_Taken, history[11:1]} : history;
-            pred <= preds[history];
+            history             <= Is_Branch ? {Is_Taken, history[11:1]} : history;
+            pred                <= preds[history];
         end
         $display("GBP Prediction: %x", pred);
         $display("GBP History: %b", history);
