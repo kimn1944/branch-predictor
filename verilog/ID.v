@@ -81,6 +81,8 @@ module ID(
 //**********************************************************************
     output reg is_branch,
     output reg is_taken,
+    output reg is_link,
+    output reg [31:0] alt_address,
 //**********************************************************************
 
 	 //Tell the simulator to process a system call
@@ -90,8 +92,10 @@ module ID(
     );
 
 //**********************************************************************
-    assign is_branch  = jump1 || branch1;
-    assign is_taken   = Request_Alt_PC1;
+    assign is_branch    = jump1 || branch1;
+    assign is_taken     = Request_Alt_PC1;
+    assign is_link      = link1;
+    assign alt_address  = Alt_PC1;
 //**********************************************************************
 
 

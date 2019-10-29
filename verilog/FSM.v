@@ -5,7 +5,7 @@ module FSM (
     input isBranch,
     input [31:0] InstrPC,
 
-    output reg  Pred [1023:0]
+    output reg Pred [1023:0]
 );
     reg  A [1023:0];
     reg  B [1023:0];
@@ -16,9 +16,9 @@ module FSM (
     always @(posedge CLK or negedge RESET) begin
         if(!RESET) begin
             for (i = 0; i < 1024; i = i + 1) begin
-                A[i] <= 0;
-                B[i] <= 0;
-                Pred[i] <= 0;
+                A[i] = 0;
+                B[i] = 0;
+                Pred[i] = 0;
             end
         end else if (isBranch) begin
             A[index] <= A[index]&B[index] | A[index]&isTaken | B[index]&isTaken;

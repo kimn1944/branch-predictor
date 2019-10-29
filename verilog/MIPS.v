@@ -261,7 +261,8 @@ module MIPS (
 
     wire is_branch;
     wire is_taken;
-
+    wire is_link;
+    wire [31:0] alt_address;
 
 //**********************************************************************
 
@@ -271,6 +272,8 @@ module MIPS (
 //**********************************************************************
         .is_branch(is_branch),
         .is_taken(is_taken),
+        .is_link(is_link),
+        .alt_address(alt_address),
 //**********************************************************************
         .Instr_IN(Instr1_dummy7),
         .Instr1_PC_IN(Instr_PC_dummy7),
