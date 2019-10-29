@@ -36,19 +36,22 @@ module META
     reg [7:0] past_decisions_L;
     reg [7:0] past_decisions_G;
     reg [7:0] past_decisions_M;
+    reg [31:0] past_Alt_PC [7:0];
     reg up_down;
-    reg missnum;
+    integer missnum;
     wire [9:0] index_IF;
     wire pred [1023:0];
     wire pred_IF;
     wire [31:0] new_pred_inst_IF;
+    wire alt_PC_valid;
     integer i;
     
-    assign up_down = (past_decisions_L[0] == past_decisions_G[0])?updown:(isTaken == past_decisions_G[0]);
-    assign index_IF = IF_PC[11:2];
-    assign pred_IF = pred [index_IF];
-    assign mispred = Is_Branch?((Is_Taken == past_decisions_M[0])?0:1):0;
-    assign new_pred_inst_IF = Hit_RAS?Alt_PC_RAS:(pred_IF?(Hit_BTB?Alt_PC_BTB:IF_PC + IncrementAmount):IF_PC +IncrementAmount);
+    assign up_down          = isBranch?((past_decisions_L[0] == past_decisions_G[0])?updown:(isTaken == past_decisions_G[0])):up_down;
+    assign index_IF         = IF_PC[11:2];
+    assign pred_IF          = Hit_RAS?1:(Hit_BTB? (pred [index_IF] ? Pred_G: Pred_L) : 0);
+    assign alt_PC_valid     = IsBranch && ((past_Alt_PC[0] == Alt_PC_ID) && (Is_Taken == past_decisions_M[0]));
+    assign mispred          = Is_Branch? ( alt_PC_valid? 0 : 1): 0;
+    assign new_pred_inst_IF = Hit_RAS? Alt_PC_RAS:(pred_IF?(Hit_BTB?Alt_PC_BTB:IF_PC + IncrementAmount):IF_PC +IncrementAmount);
 
     FSM FSM (
         .CLK(CLK),
@@ -63,7 +66,8 @@ module META
     RAS RAS (
         .CLK(CLK),
         .RESET(RESET),
-        .InstrPC_IF(IF_PC)
+        .InstrPC_IF(IF_PC),
+        .Instr_IF(IF_Instr),
         .IsJL(Is_Jump_Link),
         .InstrPC_ID(ID_PC),
 
@@ -93,6 +97,15 @@ module META
                 past_decisions_L[7:0] <= {7'b0, past_decisions_L[1]};
                 past_decisions_G[7:0] <= {7'b0, past_decisions_G[1]};
                 past_decisions_M[7:0] <= {7'b0, past_decisions_M[1]};
+                past_Alt_PC[7]     <= 32'b0;
+                past_Alt_PC[6]     <= 32'b0;
+                past_Alt_PC[5]     <= 32'b0;
+                past_Alt_PC[4]     <= 32'b0;
+                past_Alt_PC[3]     <= 32'b0;
+                past_Alt_PC[2]     <= 32'b0;
+                past_Alt_PC[1]     <= 32'b0;
+                past_Alt_PC[0]     <= past_Alt_PC[1];
+
                 past_IF_PC[7]      <= 32'b0;
                 past_IF_PC[6]      <= 32'b0;
                 past_IF_PC[5]      <= 32'b0;
@@ -103,14 +116,16 @@ module META
                 past_IF_PC[0]      <= past_IF_PC[1];
                 missnum            <= missnum +1;
             end else begin
-                request_alt_pc <= Hit_RAS || pred_IF;
+                request_alt_pc <= pred_IF;
                 alt_address    <= new_pred_inst_IF;
                 flush          <= 0;
                 past_decisions_L[7:0] <= {Pred_L, past_decisions_L[7:1]};
                 past_decisions_G[7:0] <= {Pred_G, past_decisions_G[7:1]};
-                past_decisions_M[7:0] <= {Hit_RAS || pred_IF, past_decisions_M[7:1]};
-                past_IF_PC[7]      <= IF_PC;
-                past_IF_PC[6:0]    <= past_IF_PC[6:1];
+                past_decisions_M[7:0] <= {pred_IF, past_decisions_M[7:1]};
+                past_Alt_PC[7]        <= new_pred_inst_IF;
+                past_Alt_PC[6:0]      <= past_Alt_PC[7:1];
+                past_IF_PC[7]         <= IF_PC;
+                past_IF_PC[6:0]       <= past_IF_PC[6:1];
 
             end
             // $display("\n^^^^^^^^^^^^\n");
