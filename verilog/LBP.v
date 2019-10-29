@@ -26,7 +26,7 @@ module LBP (
 
     wire preds [1023:0];
 
-    FSM FSM(
+    FSM FSML(
         .CLK(CLK),
         .RESET(RESET),
         .isTaken(Is_Taken),
@@ -35,19 +35,21 @@ module LBP (
         .Pred(preds)
         );
 
+    assign pred = preds[history];
+
     integer i;
     always @(posedge CLK or negedge RESET) begin
         if(!RESET) begin
             for(i = 0; i < 1024; i = i + 1) begin
                 branch_history[i] = 0;
             end
-            pred <= 0;
+            // pred <= 0;
         end else begin
-            pred                      <= preds[history];
+            // pred                      <= preds[history];
             branch_history[ID_index]  <= Is_Branch ? {Is_Taken, branch_history[ID_index][9:1]} : branch_history[ID_index];
         end
-        $display("History: %x%x%x%x%x%x%x%x%x%x", history[0], history[1], history[2], history[3], history[4], history[5], history[6], history[7], history[8], history[9]);
-        $display("Prediction: %x", preds[history]);
+        // $display("History: %x%x%x%x%x%x%x%x%x%x", history[0], history[1], history[2], history[3], history[4], history[5], history[6], history[7], history[8], history[9]);
+        // $display("Prediction: %x", preds[history]);
     end
 
 endmodule

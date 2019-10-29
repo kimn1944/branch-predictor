@@ -72,7 +72,7 @@ wire [31:0] branchDestination_immediate;
 always @(Jump or JumpRegister or RegisterValue or Instr_PC_Plus4 or Instruction) begin
   	if(Jump) begin
     	   /* Uncomment the line below */
-    		$display("Jump Analysis:jr=%d[%d]=%x; jd_imm=%x; branchd=%x => %x",JumpRegister, Register, RegisterValue, jumpDestination_immediate, branchDestination_immediate, NextInstructionAddress);
+    		// $display("Jump Analysis:jr=%d[%d]=%x; jd_imm=%x; branchd=%x => %x",JumpRegister, Register, RegisterValue, jumpDestination_immediate, branchDestination_immediate, NextInstructionAddress);
   	end
 end
 

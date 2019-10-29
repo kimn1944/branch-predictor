@@ -28,8 +28,8 @@ module BTB (
     wire [8:0]      index_IF;                // index from the IF
     wire [20:0]     tag_IF;                  // tag from the IF
     wire            IsJR;
-    
-    
+
+
     assign index_IF         = Instr_PC_IN_IF[10:2];
     assign tag_IF           = Instr_PC_IN_IF[31:11];
     assign IsJR             = (Instr_IF[31:11] == 21'b000000111110000000000) && (Instr_IF[5:0] == 6'b001000);
@@ -43,7 +43,7 @@ module BTB (
     assign tag1_IF      = cache[index_IF][105:85];
     assign address1_IF  = cache[index_IF][84:53];
     assign tag2_IF      = cache[index_IF][52:32];
-    assign address2_IF  = cache[index_IF][31:0];   
+    assign address2_IF  = cache[index_IF][31:0];
 
     // IF wiring for prediction
     wire [31:0] new_pred_inst_IF;
@@ -51,12 +51,12 @@ module BTB (
     wire        tag2_IF_match;
     wire [31:0] Instr_PC_IN_IF_Plus4;
     wire        take_IF;
-    
+
     assign tag1_IF_match        = (tag1_IF == tag_IF) && (Instr_PC_IN_IF != 32'b0);
     assign tag2_IF_match        = (tag2_IF == tag_IF) && (Instr_PC_IN_IF != 32'b0);
     assign Instr_PC_IN_IF_Plus4 = Instr_PC_IN_IF + 32'd4;
-    assign take_IF              = tag1_IF_match || tag2_IF_match;   
-    assign new_pred_inst_IF     = take_IF?(tag1_IF_match?address1_IF:address2_IF):(Instr_PC_IN_IF_Plus4);
+    assign take_IF              = tag1_IF_match || tag2_IF_match;
+    assign new_pred_inst_IF     = take_IF ? (tag1_IF_match ? address1_IF : address2_IF) : (Instr_PC_IN_IF_Plus4);
 
     // ID wiring
     // getting the index, tag and prediction index from ID instr and
@@ -67,7 +67,7 @@ module BTB (
     assign index_ID         = Instr_PC_IN_ID[10:2];
     assign tag_ID           = Instr_PC_IN_ID[31:11];
 
-    
+
     // getting the info from cache using the ID instruction
     wire last_recently_used;
     wire [20:0] tag1_ID;
@@ -80,7 +80,7 @@ module BTB (
     assign address1_ID          = cache[index_ID][84:53];
     assign tag2_ID              = cache[index_ID][52:32];
     assign address2_ID          = cache[index_ID][31:0];
-    
+
     // updating stuff for ID
     integer i;
     wire        tag1_ID_match;
@@ -120,7 +120,7 @@ module BTB (
         end else begin//if(!STALL) begin
             hit_BTB  <= take_IF;
             take_Alt_PC_OUT_IF  <= new_pred_inst_IF;
-            
+
             // $display("\n^^^^^^^^^^^^\n");
             // $display("____________Mispred %x Past Pred %x", mispred, past_take_ID);
             // $display("____________Take the branch_IF? %x Where to? %x", take_IF, new_pred_inst_IF);
@@ -129,5 +129,10 @@ module BTB (
             // $display("____________Past decisions %b", past_decisions);
             // $display(" BTB: past_IF: %x               INSTR_ID: %x\nvvvvvvvvvvv\n", past_IF, Instr_PC_IN_ID);
         end
+    end
+
+    always @(posedge CLK)begin
+        $display("BTB HIT           %x", take_IF);
+        $display("BTB Alt address   %x", new_pred_inst_IF);
     end
 endmodule

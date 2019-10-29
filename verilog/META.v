@@ -10,13 +10,13 @@ module META
     input [31:0] IF_Instr,
 
     // ID inputs
-    input ID_PC,
-    input [31:0] Alt_PC_ID;
+    input [31:0] ID_PC,
+    input [31:0] Alt_PC_ID,
     input Is_Jump_Link,
     input Is_Branch,
     input Is_Taken,
 
-    //predictor inputs 
+    //predictor inputs
     input Pred_L,
     input Pred_G,
     input Hit_BTB,
@@ -32,12 +32,16 @@ module META
     wire [31:0] IncrementAmount;
     assign IncrementAmount = 32'd4;
 
-    reg [7:0] past_IF_PC;
-    reg [7:0] past_decisions_L;
-    reg [7:0] past_decisions_G;
-    reg [7:0] past_decisions_M;
-    reg [31:0] past_Alt_PC [7:0];
-    reg up_down;
+    reg [31:0] past_IF_PC [6:0];
+    reg [6:0] past_decisions_L;
+    reg [6:0] past_decisions_G;
+    reg [6:0] past_decisions_M;
+    reg [31:0] past_Alt_PC [6:0];
+    wire up_down;
+    wire update_meta;
+    wire Hit_RAS;
+    wire mispred;
+    wire [31:0] Alt_PC_RAS;
     integer missnum;
     wire [9:0] index_IF;
     wire pred [1023:0];
@@ -45,19 +49,25 @@ module META
     wire [31:0] new_pred_inst_IF;
     wire alt_PC_valid;
     integer i;
-    
-    assign up_down          = isBranch?((past_decisions_L[0] == past_decisions_G[0])?updown:(isTaken == past_decisions_G[0])):up_down;
+
+    // the meta predictor is updated only when GBP and LBP make different predictions
+    // otherwise it will note be trained
+    assign up_down          = Is_Taken == past_decisions_G[0];
+    assign update_meta      = past_decisions_G[0] ^ past_decisions_L[0];
     assign index_IF         = IF_PC[11:2];
-    assign pred_IF          = Hit_RAS?1:(Hit_BTB? (pred [index_IF] ? Pred_G: Pred_L) : 0);
-    assign alt_PC_valid     = IsBranch && ((past_Alt_PC[0] == Alt_PC_ID) && (Is_Taken == past_decisions_M[0]));
-    assign mispred          = Is_Branch? ( alt_PC_valid? 0 : 1): 0;
-    assign new_pred_inst_IF = Hit_RAS? Alt_PC_RAS:(pred_IF?(Hit_BTB?Alt_PC_BTB:IF_PC + IncrementAmount):IF_PC +IncrementAmount);
+    assign pred_IF          = mispred ? 1 : (Hit_RAS ? 1 : (Hit_BTB ? (pred[index_IF] ? Pred_G : Pred_L) : 0));
+    assign alt_PC_valid     = Is_Taken ? past_Alt_PC[0] == Alt_PC_ID : past_Alt_PC[0] == ID_PC + IncrementAmount;    //Is_Branch && ((past_Alt_PC[0] == Alt_PC_ID) && (Is_Taken == past_decisions_M[0]));
+    assign mispred          = Is_Branch ? (alt_PC_valid ? 0 : 1) : 0;
+    assign new_pred_inst_IF = Hit_RAS ? Alt_PC_RAS : (pred_IF ? (Hit_BTB ? Alt_PC_BTB : IF_PC + IncrementAmount) : IF_PC + IncrementAmount);
+
+    // debug
+    wire [31:0] corr_add = Is_Taken ? Alt_PC_ID : ID_PC + 32'd8;
 
     FSM FSM (
         .CLK(CLK),
         .RESET(RESET),
         .isTaken(up_down),
-        .isBranch(Is_Branch),
+        .isBranch(Is_Branch & update_meta),
         .InstrPC(ID_PC),
 
         .Pred(pred)
@@ -85,19 +95,19 @@ module META
             past_decisions_G <= 0;
             past_decisions_M <= 0;
             missnum          <= 0;
-            for(i = 0; i < 8; i = i + 1) begin
+            for(i = 0; i < 7; i = i + 1) begin
                 past_IF_PC[i] <= 0;
             end
         end else begin//if(!STALL) begin
             if(mispred) begin
                 request_alt_pc <= 1;
-                //take_Alt_PC_OUT_IF <= past_take_ID ? Instr_PC_IN_ID + 32'd8 : Alt_PC_IN_ID;
-                alt_address  <= Is_Taken ? Alt_PC_ID : Instr_PC_IN_ID + 32'd8;
                 flush <= 1;
-                past_decisions_L[7:0] <= {7'b0, past_decisions_L[1]};
-                past_decisions_G[7:0] <= {7'b0, past_decisions_G[1]};
-                past_decisions_M[7:0] <= {7'b0, past_decisions_M[1]};
-                past_Alt_PC[7]     <= 32'b0;
+                //take_Alt_PC_OUT_IF <= past_take_ID ? Instr_PC_IN_ID + 32'd8 : Alt_PC_IN_ID;
+                alt_address  <= Is_Taken ? Alt_PC_ID : ID_PC + 32'd8;
+                past_decisions_L[6:0] <= {6'b0, past_decisions_L[1]};
+                past_decisions_G[6:0] <= {6'b0, past_decisions_G[1]};
+                past_decisions_M[6:0] <= {6'b0, past_decisions_M[1]};
+                // past_Alt_PC[7]     <= 32'b0;
                 past_Alt_PC[6]     <= 32'b0;
                 past_Alt_PC[5]     <= 32'b0;
                 past_Alt_PC[4]     <= 32'b0;
@@ -106,7 +116,7 @@ module META
                 past_Alt_PC[1]     <= 32'b0;
                 past_Alt_PC[0]     <= past_Alt_PC[1];
 
-                past_IF_PC[7]      <= 32'b0;
+                // past_IF_PC[7]      <= 32'b0;
                 past_IF_PC[6]      <= 32'b0;
                 past_IF_PC[5]      <= 32'b0;
                 past_IF_PC[4]      <= 32'b0;
@@ -114,18 +124,18 @@ module META
                 past_IF_PC[2]      <= 32'b0;
                 past_IF_PC[1]      <= 32'b0;
                 past_IF_PC[0]      <= past_IF_PC[1];
-                missnum            <= missnum +1;
+                missnum            <= missnum + 1;
             end else begin
                 request_alt_pc <= pred_IF;
                 alt_address    <= new_pred_inst_IF;
                 flush          <= 0;
-                past_decisions_L[7:0] <= {Pred_L, past_decisions_L[7:1]};
-                past_decisions_G[7:0] <= {Pred_G, past_decisions_G[7:1]};
-                past_decisions_M[7:0] <= {pred_IF, past_decisions_M[7:1]};
-                past_Alt_PC[7]        <= new_pred_inst_IF;
-                past_Alt_PC[6:0]      <= past_Alt_PC[7:1];
-                past_IF_PC[7]         <= IF_PC;
-                past_IF_PC[6:0]       <= past_IF_PC[6:1];
+                past_decisions_L[6:0] <= {Pred_L, past_decisions_L[6:1]};
+                past_decisions_G[6:0] <= {Pred_G, past_decisions_G[6:1]};
+                past_decisions_M[6:0] <= {pred_IF, past_decisions_M[6:1]};
+                past_Alt_PC[6]        <= new_pred_inst_IF;
+                past_Alt_PC[5:0]      <= past_Alt_PC[6:1];
+                past_IF_PC[6]         <= IF_PC;
+                past_IF_PC[5:0]       <= past_IF_PC[6:1];
 
             end
             // $display("\n^^^^^^^^^^^^\n");
@@ -136,6 +146,14 @@ module META
             // $display("____________Past decisions %b", past_decisions_M);
             // $display("____________Number of Branch Misses %d", missnum);
             // $display(" BTB: past_IF: %x               INSTR_ID: %x\nvvvvvvvvvvv\n", past_IF, Instr_PC_IN_ID);
+
+            $display("********************************");
+            $display("Misprediction %x", mispred);
+            $display("Take          %x. Past Take     %x. Correct decision  %x", pred_IF, past_decisions_M[0], Is_Taken);
+            $display("Alt address   %x. Past Alt PC   %x. Correct address   %x", alt_address, past_Alt_PC[0], corr_add);
+            $display("BTB hit       %x", Hit_BTB);
+            $display("Global        %x, Local         %x", Pred_G, Pred_L);
+            $display("********************************");
         end
     end
 

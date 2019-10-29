@@ -1,21 +1,21 @@
 `include "config.v"
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    17:27:55 10/20/2013 
-// Design Name: 
-// Module Name:    RegFile 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+// Company:
+// Engineer:
 //
-// Dependencies: 
+// Create Date:    17:27:55 10/20/2013
+// Design Name:
+// Module Name:    RegFile
+// Project Name:
+// Target Devices:
+// Tool versions:
+// Description:
 //
-// Revision: 
+// Dependencies:
+//
+// Revision:
 // Revision 0.01 - File Created
-// Additional Comments: 
+// Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
 module RegFile(
@@ -40,13 +40,13 @@ module RegFile(
     /*Actually do it?*/
      input Write1
 );
-	 
+
     reg [31:0] Reg [0:31]/*verilator public*/;
-    
+
     assign DataA1 = Reg[RegA1];
     assign DataB1 = Reg[RegB1];
     assign DataC1 = Reg[RegC1];
-		
+
 always @(posedge CLK or negedge RESET) begin
 	if (!RESET) begin
 		Reg[0] <= 0;
@@ -85,11 +85,11 @@ always @(posedge CLK or negedge RESET) begin
 `ifdef HAS_WRITEBACK
         if (Write1) begin
             Reg[WriteReg1] <= WriteData1;
-            $display("IDWB:Reg[%d]=%x",WriteReg1,WriteData1);
+            // $display("IDWB:Reg[%d]=%x",WriteReg1,WriteData1);
         end
 `else
         /*You might want to process the writebacks*/
-        $display("IDWB:%d?Reg[%d]=%x",Write1,WriteReg1,WriteData1);
+        // $display("IDWB:%d?Reg[%d]=%x",Write1,WriteReg1,WriteData1);
 `endif
     end
 

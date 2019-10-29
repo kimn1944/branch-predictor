@@ -28,8 +28,8 @@ module FSM (
     end
 
     always begin
-        $display("isBranch = %x, isTaken = %x", isBranch, isTaken);
-        $display("AB = %x%x", A[index], B[index]);
-        $display("Pred = %x for %x", Pred[index], InstrPC);
+        // $display("isBranch = %x, isTaken = %x", isBranch, isTaken);
+        // $display("AB = %x%x", A[index], B[index]);
+        // $display("Pred = %x for %x", Pred[index], InstrPC);
     end
 endmodule

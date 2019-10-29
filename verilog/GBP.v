@@ -25,27 +25,31 @@ module GBP(
         .preds(preds)
         );
 
-    reg   [11:0]  past_histories [7:0];
+    reg   [11:0]  past_histories [6:0];
     wire  [11:0]  past_history;
 
     assign past_history = past_histories[0];
-
+    assign pred         = preds[history];
     integer i;
+
+    // always @* begin
+    //     pred <= preds[history];
+    // end
+
     always @(posedge CLK or negedge RESET) begin
         if(!RESET) begin
-            for(i = 0; i < 8; i = i + 1) begin
+            for(i = 0; i < 7; i = i + 1) begin
                 past_histories[i] = 0;
             end
             history <= 0;
-            pred    <= 0;
         end else begin
-            past_histories[7]   <= history;
-            past_histories[6:0] <= past_histories[7:1];
+            past_histories[6]   <= history;
+            past_histories[5:0] <= past_histories[6:1];
             history             <= Is_Branch ? {Is_Taken, history[11:1]} : history;
-            pred                <= preds[history];
+            // pred                <= preds[history];
         end
-        $display("GBP Prediction: %x", pred);
-        $display("GBP History: %b", history);
+        // $display("GBP Prediction: %x", pred);
+        // $display("GBP History: %b", history);
     end
 
 endmodule
