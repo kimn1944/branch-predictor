@@ -58,10 +58,11 @@ module META
     assign pred_IF          = mispred ? 1 : (Hit_RAS ? 1 : (Hit_BTB ? (pred[index_IF] ? Pred_G : Pred_L) : 0));
     assign alt_PC_valid     = Is_Taken ? past_Alt_PC[0] == Alt_PC_ID : past_Alt_PC[0] == ID_PC + IncrementAmount;    //Is_Branch && ((past_Alt_PC[0] == Alt_PC_ID) && (Is_Taken == past_decisions_M[0]));
     assign mispred          = Is_Branch ? (alt_PC_valid ? 0 : 1) : 0;
-    assign new_pred_inst_IF = Hit_RAS ? Alt_PC_RAS : (pred_IF ? (Hit_BTB ? Alt_PC_BTB : IF_PC + IncrementAmount) : IF_PC + IncrementAmount);
+    assign new_pred_inst_IF = mispred ? corr_add : (Hit_RAS ? Alt_PC_RAS : (pred_IF ? (Hit_BTB ? Alt_PC_BTB : IF_PC + IncrementAmount) : IF_PC + IncrementAmount));
 
     // debug
-    wire [31:0] corr_add = Is_Taken ? Alt_PC_ID : ID_PC + 32'd8;
+    wire [31:0] corr_add;
+    assign corr_add = Is_Taken ? Alt_PC_ID : ID_PC + 32'd8;
 
     FSM FSM (
         .CLK(CLK),
@@ -151,7 +152,7 @@ module META
             $display("Misprediction %x", mispred);
             $display("Take          %x. Past Take     %x. Correct decision  %x", pred_IF, past_decisions_M[0], Is_Taken);
             $display("Alt address   %x. Past Alt PC   %x. Correct address   %x", alt_address, past_Alt_PC[0], corr_add);
-            $display("BTB hit       %x", Hit_BTB);
+            $display("BTB hit       %x. BTB_alt       %x", Hit_BTB, Alt_PC_BTB);
             $display("Global        %x, Local         %x", Pred_G, Pred_L);
             $display("********************************");
         end

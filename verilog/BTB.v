@@ -93,6 +93,8 @@ module BTB (
         for (i = 0; i < 512; i = i + 1) begin
                 cache[i] <= 107'b0;
         end
+        hit_BTB = 0;
+        take_Alt_PC_OUT_IF = 0;
     end
 
     // updating BTB with values from the ID
@@ -112,24 +114,26 @@ module BTB (
         //end
     end
 
-    // resetting or updating the output values of the BTB on clock cycle
-    always @(posedge take_IF or negedge RESET) begin
-        if(!RESET) begin
-            hit_BTB <= 0;
-            take_Alt_PC_OUT_IF <= 0;
-        end else begin//if(!STALL) begin
-            hit_BTB  <= take_IF;
-            take_Alt_PC_OUT_IF  <= new_pred_inst_IF;
+    assign hit_BTB  = take_IF;
+    assign take_Alt_PC_OUT_IF  = new_pred_inst_IF;
 
-            // $display("\n^^^^^^^^^^^^\n");
-            // $display("____________Mispred %x Past Pred %x", mispred, past_take_ID);
-            // $display("____________Take the branch_IF? %x Where to? %x", take_IF, new_pred_inst_IF);
-            // $display("____________Take the branch_ID? %x Where to? %x", is_Taken_IN_ID, is_Taken_IN_ID ? Alt_PC_IN_ID : Instr_PC_IN_ID + 32'd8);
-            // $display("____________Take IF %x", take_IF);
-            // $display("____________Past decisions %b", past_decisions);
-            // $display(" BTB: past_IF: %x               INSTR_ID: %x\nvvvvvvvvvvv\n", past_IF, Instr_PC_IN_ID);
-        end
-    end
+    // resetting or updating the output values of the BTB on clock cycle
+    // always @(posedge CLK or negedge RESET) begin
+    //     if(!RESET) begin
+    //         hit_BTB <= 0;
+    //         take_Alt_PC_OUT_IF <= 0;
+    //     end else begin//if(!STALL) begin
+    //         
+
+    //         // $display("\n^^^^^^^^^^^^\n");
+    //         // $display("____________Mispred %x Past Pred %x", mispred, past_take_ID);
+    //         // $display("____________Take the branch_IF? %x Where to? %x", take_IF, new_pred_inst_IF);
+    //         // $display("____________Take the branch_ID? %x Where to? %x", is_Taken_IN_ID, is_Taken_IN_ID ? Alt_PC_IN_ID : Instr_PC_IN_ID + 32'd8);
+    //         // $display("____________Take IF %x", take_IF);
+    //         // $display("____________Past decisions %b", past_decisions);
+    //         // $display(" BTB: past_IF: %x               INSTR_ID: %x\nvvvvvvvvvvv\n", past_IF, Instr_PC_IN_ID);
+    //     end
+    // end
 
     always @(posedge CLK)begin
         $display("BTB HIT           %x", take_IF);
