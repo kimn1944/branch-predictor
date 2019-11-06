@@ -1,62 +1,77 @@
-module RAS (
-        input CLK,
-        input RESET,
-        input [31:0] InstrPC_IF,
-        input [31:0] Instr_IF,
-        input IsJL,
-        input [31:0] InstrPC_ID,
+/*
+* File: RAS.v
+* Author: Nikita Kim
+* Email: kimn1944@gmail.com
+* Date: 11/3/2019
+*/
 
-        output reg hit,
-        output reg [31:0] alt_PC
-    );
+`include "config.v"
 
-    reg [31:0]  stack [31:0];
-    integer     i;
-    integer     stack_pointer;
-    wire        IsJR;
-    wire [31:0] next_PC;
-    wire        RAS_hit;
+module RAS
+    #()
+    // general inputs
+    (input clk,
+    input reset,
+    input stall,
 
-    assign IsJR     = (Instr_IF[31:11] == 21'b000000111110000000000) && (Instr_IF[5:0] == 6'b001000);
-    assign RAS_hit  = IsJR && (stack_pointer > 0);
-    assign next_PC  = RAS_hit ? (IsJL ? {(InstrPC_ID + 8)} : stack[stack_pointer - 1] ) : (InstrPC_IF + 4);
+    // IF inputs
+    input [31:0] if_pc,
+    input [31:0] if_instr,
 
-    always @(posedge IsJL or posedge IsJR or negedge RESET) begin
-        if (!RESET) begin
-            alt_PC   <= 0;
-            hit      <= 0;
-            for(i = 0; i < 32; i = i + 1) begin
-                stack[i] = 0;
-            end
-            stack_pointer <= 0;
-        end else if (IsJL && !IsJR && (stack_pointer < 32))begin
-            stack[stack_pointer] <= {InstrPC_ID + 8};
-            stack_pointer        <= stack_pointer +1;
-        end else if (IsJL && !IsJR && stack_pointer == 32) begin
-            stack[31] <= {(InstrPC_ID + 8)};
-            stack[30:0] <= {stack[31:1]};
-        end else if (RAS_hit) begin
-            stack_pointer <= stack_pointer - {31'd0, RAS_hit} + {31'd0, IsJL};
-            hit           <= RAS_hit;
-            alt_PC        <= next_PC;
-            stack[stack_pointer - 1]   <= IsJL ? stack[stack_pointer - 1] : {32'b0};
-        end else begin
-            hit           <= 0;
-            alt_PC        <= next_PC;
+    // ID inputs
+    input [31:0] id_pc,
+    input is_link,
+
+    // outputs
+    output reg hit,
+    output reg [31:0] alt_pc);
+    // end
+
+    STACK #() RAS_STACK(
+        .clk(clk),
+        .reset(reset),
+        .stall(stall),
+        .push(push),
+        .pop(pop),
+        .data(id_pc + 32'd8),
+        .top(top));
+
+   	wire [5:0] opcode;
+    wire [5:0] funct;
+    wire [4:0] rs;
+    wire [31:0] top;
+    wire push;
+    wire pop;
+    wire special;
+    wire available;
+
+    assign opcode   = if_instr[31:26];
+	  assign funct    = if_instr[5:0];
+    assign rs       = if_instr[25:21];
+    assign special  = is_link & hit;          // special case when we push and pop at the same time
+    assign push     = special ? 0 : is_link;
+    assign pop      = special ? 0 : hit;
+    assign available = top != 32'b0;
+
+    always @(posedge clk or negedge reset) begin
+        if(!reset) begin
+
         end
-        // $display("\n\nStack[0]: %x", stack[0]);
-        // $display("Stack[1]: %x", stack[1]);
-        // $display("Stack[2]: %x", stack[2]);
-        // $display("Stack[3]: %x", stack[3]);
-        // $display("Stack[4]: %x", stack[4]);
-        // $display("Stack[5]: %x", stack[5]);
-        // $display("Stack[6]: %x", stack[6]);
-        // $display("Stack[7]: %x", stack[7]);
-        // $display("Stack[8]: %x", stack[8]);
-        // $display("Stack pointer: %d %d %x; isJL: %b; isJR: %b", stack_pointer - RAS_hit + IsJL, stack_pointer -1, stack[stack_pointer-1], IsJL, IsJR);
-        // $display("His_RAS: %b; next_PC: %x, IF_Instr: %x, IF_PC: %x", RAS_hit, next_PC, Instr_IF, InstrPC_IF);
+        else begin
+
+        end
+        `ifdef RAS_PRINT
+            $display("RAS Output");
+            $display("IF PC: %x, Hit: %x, Alt PC: %x", if_pc, hit, alt_pc);
+            $display("ID PC: %x, Is Link: %x, Special: %x", id_pc, is_link, special);
+            $display("Pop: %x, Push: %x, Data: %x", pop, push, id_pc + 32'd8);
+            $display("RAS End");
+        `endif
     end
 
-
+    always @ * begin
+        hit     <= (opcode == 6'b000000) & (funct == 6'b001000) & (rs == 5'b11111) & available;
+        alt_pc  <= special ? id_pc + 32'd8 : top;
+    end
 
 endmodule

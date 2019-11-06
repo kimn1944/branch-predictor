@@ -1,35 +1,60 @@
-module FSM (
-    input CLK,
-    input RESET,
-    input isTaken,
-    input isBranch,
-    input [31:0] InstrPC,
+/*
+* File: FSM.v
+* Author: Nikita Kim
+* Email: kimn1944@gmail.com
+* Date: 10/31/2019
+*/
 
-    output reg Pred [1023:0]
-);
-    reg  A [1023:0];
-    reg  B [1023:0];
-    wire [9:0] index;
-    assign index = InstrPC[11:2];
+`include "config.v"
 
+module FSM
+    // params
+    #(parameter WIDTH = 1024,
+      parameter INDEX = 10)
+    // general inputs
+    (input clk,
+    input reset,
+    input stall,
+
+    // selector inputs
+    input [INDEX - 1:0] pred_sel,
+
+    // update inputs
+    input [INDEX - 1:0] update_sel,
+    input update,
+    input up_down,
+
+    // outputs
+    output reg pred);
+    // end
     integer i;
-    always @(posedge CLK or negedge RESET) begin
-        if(!RESET) begin
-            for (i = 0; i < 1024; i = i + 1) begin
+    reg                 A [WIDTH - 1:0];
+    reg                 B [WIDTH - 1:0];
+
+    always @(posedge clk or negedge reset) begin
+        if(!reset) begin
+            for(i = 0; i < WIDTH; i = i + 1) begin
                 A[i] = 0;
                 B[i] = 0;
-                Pred[i] = 0;
             end
-        end else if (isBranch) begin
-            A[index] <= A[index]&B[index] | A[index]&isTaken | B[index]&isTaken;
-            B[index] <= A[index]&~B[index] | A[index]&isTaken | ~B[index]&isTaken;
-            Pred[index] <= A[index]&B[index] | A[index]&isTaken | B[index]&isTaken;
         end
+        else if(!stall) begin
+            if (update) begin
+                A[update_sel] <= (A[update_sel] & B[update_sel]) | (A[update_sel] & up_down) | (B[update_sel] & up_down);
+                B[update_sel] <= (A[update_sel] & ~B[update_sel]) | (A[update_sel] & up_down) | (~B[update_sel] & up_down);
+            end
+        end
+        `ifdef FSM_PRINT
+            $display("FSM Output");
+            $display("Update Sel: %x, Update Idx: %x, Update: %x, Up_Down: %x", update_sel, update_sel, update, up_down);
+            $display("A: %x, B: %x, Pred: %x", A[update_sel], B[update_sel], A[update_sel]);
+            $display("Pred Sel: %x, Pred Idx: %x, Pred %x", pred_sel, pred_sel, A[pred_sel]);
+            $display("FSM End");
+        `endif
     end
 
-    always begin
-        // $display("isBranch = %x, isTaken = %x", isBranch, isTaken);
-        // $display("AB = %x%x", A[index], B[index]);
-        // $display("Pred = %x for %x", Pred[index], InstrPC);
+    always @ * begin
+        pred = A[pred_sel];
     end
+
 endmodule

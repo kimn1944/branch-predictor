@@ -130,7 +130,7 @@ module MIPS (
         .Instr_PC_Plus4(Instr_PC_Plus4_IFID),
         .STALL(STALL_IDIF),
         .Request_Alt_PC(take),
-        .Alt_PC(alt_address),
+        .Alt_PC(alt_pc),
         .Instr_address_2IM(Instr_address_2IC),
         .Instr1_fIM(Instr1_fIC)
         );
@@ -262,27 +262,79 @@ module MIPS (
     wire is_branch;
     wire is_taken;
     wire is_link;
-    wire [31:0] ID_alt_address;
-    wire flush;
-    wire take;
     wire [31:0] alt_address;
 
-    BRANCH_PREDICTOR BRANCH_PREDICTOR(
-        .CLK(CLK),
-        .RESET(RESET),
-        .STALL(STALL_IDIF),
-        .IF_PC(Instr_PC_IFID),
-        .IF_Instr(Instr1_IFID),
-        .ID_PC(Instr_PC_dummy7),
-        .Alt_PC_ID(ID_alt_address),
-        .Is_Jump_Link(is_link),
-        .Is_Branch(is_branch),
-        .Is_Taken(is_taken),
-        .flush(flush),
-        .take(take),
-        .alt_address(alt_address)
-        );
+    wire take;
+    wire [31:0] alt_pc;
+    wire flush;
 
+    BRANCH_PREDICTOR BRANCH_PREDICTOR(
+        .clk(CLK),
+        .reset(RESET),
+        .stall(STALL_IDIF),
+        .if_pc(Instr_PC_IFID),
+        .if_instr(Instr1_IFID),
+        .id_pc(Instr_PC_dummy7),
+        .alt_address(alt_address),
+        .is_link(is_link),
+        .is_branch(is_branch),
+        .is_taken(is_taken),
+        .take(take),
+        .flush(flush),
+        .alt_pc(alt_pc));
+
+    // LBP LBP(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .pred(lbp_pred));
+
+    // GBP GBP(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .pred(gbp_pred));
+
+    // BTB BTB(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .alt_address(alt_address),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .hit(hit),
+    //     .alt_pc(alt_pc));
+
+    // RAS RAS(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .if_instr(Instr1_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .alt_address(alt_address),
+    //     .is_link(is_link),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .hit(),
+    //     .alt_pc());
+
+    // META META(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .gbp_pred(gbp_pred),
+    //     .lbp_pred(lbp_pred),
+    //     .take());
 //**********************************************************************
 
   	ID ID(
@@ -291,8 +343,8 @@ module MIPS (
 //**********************************************************************
         .is_branch(is_branch),
         .is_taken(is_taken),
+        .alt_address(alt_address),
         .is_link(is_link),
-        .alt_address(ID_alt_address),
 //**********************************************************************
         .Instr_IN(Instr1_dummy7),
         .Instr1_PC_IN(Instr_PC_dummy7),

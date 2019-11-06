@@ -1,55 +1,73 @@
-module GBP(
+/*
+* File: GBP.v
+* Author: Nikita Kim
+* Email: kimn1944@gmail.com
+* Date: 10/31/2019
+*/
+
+`include "config.v"
+
+module GBP
+    #(parameter DELAY = 7)
     // general inputs
-    input CLK,
-    input RESET,
+    (input clk,
+    input reset,
+    input stall,
+
+    // IF inputs
+    input [31:0] if_pc,
 
     // ID inputs
-    input Is_Branch,
-    input Is_Taken,
+    input [31:0] id_pc,
+    input is_branch,
+    input is_taken,
 
     // outputs
-    output reg pred
-    );
-
-    // history register
-    reg [11:0]  history;
-    wire        preds [4095:0];
-
-    // FSM object
-    GBP_FSM GBP_FMS(
-        .CLK(CLK),
-        .RESET(RESET),
-        .Index(past_history),
-        .Is_Taken(Is_Taken),
-        .Update(Is_Branch),
-        .preds(preds)
-        );
-
-    reg   [11:0]  past_histories [6:0];
-    wire  [11:0]  past_history;
-
-    assign past_history = past_histories[0];
-    assign pred         = preds[history];
+    output reg pred);
+    // end
     integer i;
 
-    // always @* begin
-    //     pred <= preds[history];
-    // end
+    FSM #(.WIDTH(4096), .INDEX(12)) GBP_FSM (
+        .clk(clk),
+        .reset(reset),
+        .stall(stall),
+        .pred_sel(history),
+        .update_sel(past_histories[0]),
+        .update(is_branch),
+        .up_down(is_taken),
+        .pred(fsm_pred));
 
-    always @(posedge CLK or negedge RESET) begin
-        if(!RESET) begin
-            for(i = 0; i < 7; i = i + 1) begin
-                past_histories[i] = 0;
-            end
+    reg   [11:0]  history;
+    reg   [11:0]  past_histories [DELAY - 1:0];
+    reg   [31:0]  instr_histories [DELAY - 1:0];
+    wire          fsm_pred;
+
+    always @(posedge clk or negedge reset) begin
+        if(!reset) begin
             history <= 0;
-        end else begin
-            past_histories[6]   <= history;
-            past_histories[5:0] <= past_histories[6:1];
-            history             <= Is_Branch ? {Is_Taken, history[11:1]} : history;
-            // pred                <= preds[history];
+            for(i = 0; i < DELAY; i = i + 1) begin
+                past_histories[i]   = 0;
+                instr_histories[i]  = 0;
+            end
         end
-        // $display("GBP Prediction: %x", pred);
-        // $display("GBP History: %b", history);
+        else if(!stall) begin
+            history <= is_branch ? {is_taken, history[11:1]} : history;
+            past_histories[DELAY - 1]     <= history;
+            past_histories[DELAY - 2:0]   <= past_histories[DELAY - 1:1];
+            instr_histories[DELAY - 1]    <= if_pc;
+            instr_histories[DELAY - 2:0]  <= instr_histories[DELAY - 1:1];
+        end
+        `ifdef GBP_PRINT
+            $display("\t\t\t\t\tGBP Output");
+            $display("History: %b, IF PC: %x, Pred: %x", history, if_pc, fsm_pred);
+            $display("Past History: %b, Past PC: %x", past_histories[0], instr_histories[0]);
+            $display("ID PC: %x, Is Branch: %x, Is Taken: %x", id_pc, is_branch, is_taken);
+            $display("\t\t\t\t\tGBP end");
+        `endif
+    end
+
+    always @ * begin
+        pred = fsm_pred;
     end
 
 endmodule

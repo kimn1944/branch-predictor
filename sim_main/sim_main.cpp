@@ -659,8 +659,9 @@ int main(int argc, char **argv)
 				printf("!!!MemWriteEx0x%x\n",nextInstruction);
 				//MEM_INSTR_COUNT++;
 			}*/
-
-			INSTR_COUNT++;
+			if(nextInstruction != 0x00000000) {
+			    INSTR_COUNT++;
+			}
 			prevInstructionAddr=nextInstructionAddr;
 
 		}
