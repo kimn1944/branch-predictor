@@ -21,3 +21,13 @@
 //Added before project 4 starts
 //`define OUT_OF_ORDER
 
+// printing defines
+// `define FSM_PRINT
+// `define GBP_PRINT
+// `define LBP_PRINT
+// `define BTB_PRINT
+// `define RAS_PRINT
+// `define STACK_PRINT
+// `define META_PRINT
+// `define BP_PRINT
+// `define BP_STAT

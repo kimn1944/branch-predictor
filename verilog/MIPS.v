@@ -129,8 +129,8 @@ module MIPS (
         .Instr_PC_OUT(Instr_PC_IFID),
         .Instr_PC_Plus4(Instr_PC_Plus4_IFID),
         .STALL(STALL_IDIF),
-        .Request_Alt_PC(Request_Alt_PC_IDEXE),
-        .Alt_PC(Alt_PC_IDEXE),
+        .Request_Alt_PC(take),
+        .Alt_PC(alt_pc),
         .Instr_address_2IM(Instr_address_2IC),
         .Instr1_fIM(Instr1_fIC)
         );
@@ -138,7 +138,7 @@ module MIPS (
     dummy dummy(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy1),
         .Instr_PC_OUT(Instr_PC_dummy1),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy1),
@@ -151,7 +151,7 @@ module MIPS (
     dummy1 dummy1(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy2),
         .Instr_PC_OUT(Instr_PC_dummy2),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy2),
@@ -164,7 +164,7 @@ module MIPS (
     dummy2 dummy2(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy3),
         .Instr_PC_OUT(Instr_PC_dummy3),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy3),
@@ -177,7 +177,7 @@ module MIPS (
     dummy3 dummy3(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy4),
         .Instr_PC_OUT(Instr_PC_dummy4),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy4),
@@ -190,7 +190,7 @@ module MIPS (
     dummy4 dummy4(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy5),
         .Instr_PC_OUT(Instr_PC_dummy5),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy5),
@@ -203,7 +203,7 @@ module MIPS (
     dummy5 dummy5(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy6),
         .Instr_PC_OUT(Instr_PC_dummy6),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy6),
@@ -216,7 +216,7 @@ module MIPS (
     dummy6 dummy6(
         .CLK(CLK),
         .RESET(RESET),
-        .FLUSH(Request_Alt_PC_IDEXE),
+        .FLUSH(flush),
         .Instr1_OUT(Instr1_dummy7),
         .Instr_PC_OUT(Instr_PC_dummy7),
         .Instr_PC_Plus4(Instr_PC_Plus4_dummy7),
@@ -261,8 +261,80 @@ module MIPS (
 
     wire is_branch;
     wire is_taken;
+    wire is_link;
+    wire [31:0] alt_address;
 
+    wire take;
+    wire [31:0] alt_pc;
+    wire flush;
 
+    BRANCH_PREDICTOR BRANCH_PREDICTOR(
+        .clk(CLK),
+        .reset(RESET),
+        .stall(STALL_IDIF),
+        .if_pc(Instr_PC_IFID),
+        .if_instr(Instr1_IFID),
+        .id_pc(Instr_PC_dummy7),
+        .alt_address(alt_address),
+        .is_link(is_link),
+        .is_branch(is_branch),
+        .is_taken(is_taken),
+        .take(take),
+        .flush(flush),
+        .alt_pc(alt_pc));
+
+    // LBP LBP(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .pred(lbp_pred));
+
+    // GBP GBP(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .pred(gbp_pred));
+
+    // BTB BTB(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .alt_address(alt_address),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .hit(hit),
+    //     .alt_pc(alt_pc));
+
+    // RAS RAS(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .if_instr(Instr1_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .alt_address(alt_address),
+    //     .is_link(is_link),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .hit(),
+    //     .alt_pc());
+
+    // META META(
+    //     .clk(CLK),
+    //     .reset(RESET),
+    //     .if_pc(Instr_PC_IFID),
+    //     .id_pc(Instr_PC_dummy7),
+    //     .is_branch(is_branch),
+    //     .is_taken(is_taken),
+    //     .gbp_pred(gbp_pred),
+    //     .lbp_pred(lbp_pred),
+    //     .take());
 //**********************************************************************
 
   	ID ID(
@@ -271,6 +343,8 @@ module MIPS (
 //**********************************************************************
         .is_branch(is_branch),
         .is_taken(is_taken),
+        .alt_address(alt_address),
+        .is_link(is_link),
 //**********************************************************************
         .Instr_IN(Instr1_dummy7),
         .Instr1_PC_IN(Instr_PC_dummy7),
