@@ -11,16 +11,19 @@ The branch predictor module implements:
 ## Running the simulator
 In order to run the simulator you must download, extract and compile the files with the provided make file.  
 The extracted directory will have the following structure:
-* verilog/   this contains the verilog design files for the processor
-* sim_main/   this contains the c++ source files necessary to run the simulator
-* tests/   this contains the test files for the simulator  
+* verilog/  
+this contains the verilog design files for the processor
+* sim_main/  
+this contains the c++ source files necessary to run the simulator
+* tests/  
+this contains the test files for the simulator  
   
 In order to test the simulator you will have to call the executable and provide it with one of the test files like so:  
 ./VMIPS -f tests/cpp/hello -d X  
 where hello is the test file and X is the number of cycles you want the processor to run for. In our case 150000.  
 
 ## Predictor files
-Files created/modified by the authors:
+Files created by the authors:
 * BRANCH_PREDICTOR.v
 * META.v
 * GBP.v
