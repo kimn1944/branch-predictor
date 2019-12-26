@@ -19,7 +19,8 @@ this contains the c++ source files necessary to run the simulator
 this contains the test files for the simulator  
   
 In order to test the simulator you will have to call the executable and provide it with one of the test files like so:  
-./VMIPS -f tests/cpp/hello -d X  
+>./VMIPS -f tests/cpp/hello -d X  
+
 where hello is the test file and X is the number of cycles you want the processor to run for. In our case 150000.  
 
 ## Predictor files
